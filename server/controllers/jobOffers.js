@@ -2,11 +2,11 @@ import JobOfferMessage from '../models/jobOfferMessage.js';
 
 export const getJobOffers = async (req, res) => {
     try {
-        const jobOffers = await JobOfferMessage.find();
+        const jobOffersMessages = await JobOfferMessage.find();
 
-        console.log(jobOffers);
+        console.log(jobOffersMessages);
 
-        res.status(200).json(jobOffers);
+        res.status(200).json(jobOffersMessages);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }

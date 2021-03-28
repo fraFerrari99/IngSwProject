@@ -2,19 +2,16 @@ import mongoose from 'mongoose';
 
 //mongoose allows us to get uniformity, each jobOffer is going to have this things
 const jobOfferSchema = mongoose.Schema({
+    company: String,
     title: String,
     description: String,
-    companyName: String,
-    creator: String,
-    jobRequirements: [String],
+    requirements: [String],
     logo: String,        //we will convert an image into a string using base64
-    jobApplicants: {
-        type: String,
-        default: []
-    },
+    RAL: String,
+    selectedFile: String,
     createdAt: {
         type: Date,
-        dafault: new Date()
+        default: new Date()
     }
 });     
 
