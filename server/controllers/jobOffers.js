@@ -1,4 +1,5 @@
 import JobOfferMessage from '../models/jobOfferMessage.js';
+import mongoose from 'mongoose';
 
 export const getJobOffers = async (req, res) => {
     try {
@@ -24,4 +25,25 @@ export const createJobOffer = async (req, res) => {
     } catch (error) {
         res.status(409).json({ message: error.message });
     }
+};
+
+export const deleteJobOffer = async ( req, res ) => {
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No post with that id');
+
+    await JobOfferMessage.findByIdAndRemove(id);
+
+    res.json({ message: 'Post deleted succesfully' });
+};
+
+export const updateJobOffer = async ( req, res ) => {
+    const { id: _id } = req.params;     //rinominato
+    const post = req.body;
+
+    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('No post with that id');
+
+    const updatedJobOffer = await JobOfferMessage.findByIdAndUpdate(_id, { ...post, _id}, { new: true });
+
+    res.json(updatedJobOffer);
 };
