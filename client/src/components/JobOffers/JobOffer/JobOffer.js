@@ -13,6 +13,7 @@ import useStyles from './styles';
 const JobOffer = ({ jobOffer, setCurrentId }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const user = JSON.parse(localStorage.getItem('profile'));
 
     return (
         <Card className={classes.root} >
@@ -34,14 +35,16 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
           </CardContent>
           <CardActions >
               <Button size="small" color="primary" > <AddIcon  fontSize="small"/> View </Button>
-              
+            {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && (
               <Button size="small" color="primary" component={Link} to="/postJobOffer" onClick={() => setCurrentId(jobOffer._id)} > 
                 <EditIcon  fontSize="small"/>  Edit  
               </Button>
-
+            )}
+            {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && (
               <Button className={classes.deleteButton} size="small" color="secondary" onClick={() => dispatch(deleteJobOffer(jobOffer._id))}>
-                          <DeleteIcon  fontSize="small"/> Delete
+                <DeleteIcon  fontSize="small"/> Delete
               </Button>
+            )}
           </CardActions>
         </Card>
       );

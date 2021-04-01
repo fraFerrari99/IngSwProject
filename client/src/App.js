@@ -13,7 +13,7 @@ const App = () => {
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
 
-    console.log(user);
+    //console.log(user);
 
     //used to pass JSX component to the children
     const _PostJobOffer = (props) => {

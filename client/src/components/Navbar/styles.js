@@ -37,5 +37,5 @@ export default makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         width: '300px',
-      },
+      }
 }));

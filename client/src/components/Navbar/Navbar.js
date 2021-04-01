@@ -6,11 +6,13 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import { useDispatch } from 'react-redux';
+import { useWindowResize } from 'react-resize-tracker';
+import decode from 'jwt-decode';
 
 import useStyles from './styles';
 
 const Navbar = ({ setCurrentId, user, setUser }) => {
-
+    const [currentWidth, currentHeight] = useWindowResize();
     const classes= useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -47,13 +49,17 @@ const Navbar = ({ setCurrentId, user, setUser }) => {
 
         history.push('/');
         setUser(null);
-        localStorage.removeItem('profile');
     };
 
     useEffect(() => {
         const token = user?.token;
 
-        //JWT
+        if(token) {
+            const decodedToken = decode(token);
+
+            //se scade il token(dopo 1h) faccio il logout
+            if(decodedToken.exp * 1000 < new Date().getTime()) logout();
+        }
 
         setUser(JSON.parse(localStorage.getItem('profile')));
     }, [location]);
@@ -89,9 +95,9 @@ const Navbar = ({ setCurrentId, user, setUser }) => {
                         HelloGeek
                     </Typography>
                         {user ? (
-                            <div className={classes.profile}>
-                                <Avatar className={classes.purple} alt={user.result.name} src={user.result.imageUrl}>{user.result.name.charAt(0)}</Avatar>
-                                <Typography className={classes.userName} variant="h6">{user.result.name}</Typography>
+                            <div className={classes.profile} justify="flex-end">
+                                <Avatar flexGrow={1} className={classes.purple} alt={user.result.name} src={user.result.imageUrl}>{user.result.name.charAt(0)}</Avatar>
+                                {currentWidth > 600 && (<Typography className={classes.userName} variant="h6">{user.result.name}</Typography>)}
                                 <Button color="inherit" className={classes.logout} onClick={logout}>Logout</Button>
                             </div>
                         ) : (

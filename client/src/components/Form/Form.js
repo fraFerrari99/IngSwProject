@@ -11,7 +11,7 @@ const Form = ({ currentId, setCurrentId }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const jobOffer = useSelector((state) => currentId ? state.jobOffers.find((p) => p._id == currentId) : null);
-    //var modifyPageOpen = false;
+    const user = JSON.parse(localStorage.getItem('profile'));
 
     useEffect(() => {
         if(jobOffer) setJobOfferData(jobOffer);
@@ -21,17 +21,26 @@ const Form = ({ currentId, setCurrentId }) => {
         e.preventDefault();
 
         if(currentId) {
-            dispatch(updateJobOffer( currentId, jobOfferData ));
+            dispatch(updateJobOffer( currentId, { ...jobOfferData, name: user?.result?.name } ));
         } else {
-            dispatch(createJobOffer(jobOfferData));
+            dispatch(createJobOffer({ ...jobOfferData, name: user?.result?.name }));
         }
-
         clear();
     }
 
     const clear = () => {
         setCurrentId(null);
         setJobOfferData({ company: '', title: '', description: '', requirements: '', RAL: '', selectedFile: null,   });
+    }
+
+    if(!user?.result?.name) {
+        return (
+            <Paper className={classes.paper}>
+                <Typography variant="h6" align="center">
+                    Please Sign In to create a new Job Offer and Chat with other Users.
+                </Typography>
+            </Paper>
+        )
     }
 
     return (

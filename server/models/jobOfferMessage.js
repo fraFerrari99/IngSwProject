@@ -5,6 +5,8 @@ const jobOfferSchema = mongoose.Schema({
     company: String,
     title: String,
     description: String,
+    name: String,           //creator name, automatically picked
+    creator: String,        //creator id
     requirements: [String],
     logo: String,        //we will convert an image into a string using base64
     RAL: String,

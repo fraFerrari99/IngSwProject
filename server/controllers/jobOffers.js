@@ -5,7 +5,7 @@ export const getJobOffers = async (req, res) => {
     try {
         const jobOffersMessages = await JobOfferMessage.find();
 
-        console.log("Current number of JobOffers: " + jobOffersMessages.length);
+        //console.log("Current number of JobOffers: " + jobOffersMessages.length);
 
         res.status(200).json(jobOffersMessages);
     } catch (error) {
@@ -16,7 +16,7 @@ export const getJobOffers = async (req, res) => {
 export const createJobOffer = async (req, res) => {
     const jobOffer = req.body;
 
-    const newJobOffer = new JobOfferMessage(jobOffer);
+    const newJobOffer = new JobOfferMessage({ ...jobOffer, creator: req.userId, createdAt : new Date().toISOString() });
 
     try {
         await newJobOffer.save();
