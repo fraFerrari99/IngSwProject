@@ -5,7 +5,7 @@ export const getJobOffers = async (req, res) => {
     try {
         const jobOffersMessages = await JobOfferMessage.find();
 
-        console.log(jobOffersMessages);
+        console.log("Current number of JobOffers: " + jobOffersMessages.length);
 
         res.status(200).json(jobOffersMessages);
     } catch (error) {
