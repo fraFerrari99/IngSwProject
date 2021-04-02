@@ -70,5 +70,5 @@ export default makeStyles({
   deleteButton: {
     float: "right",
     position: "relative",
-  }
+  },
 });

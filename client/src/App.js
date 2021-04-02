@@ -7,9 +7,10 @@ import Home from './components/Home/Home';
 import PostJobOffer from './components/PostJobOffer/PostJobOffer';
 import useStyles from './styles';
 import Auth from './components/Auth/Auth';
+import Profile from './components/Profile/Profile';
 
 const App = () => {
-    const classes = useStyles();
+
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
 
@@ -44,6 +45,7 @@ const App = () => {
                 <Route path="/" exact component={_Home}/>
                 <Route path="/postJobOffer" exact component={_PostJobOffer}/>
                 <Route path="/auth" exact component={Auth}/>
+                <Route path="/profile" exact component={Profile}/>
             </Switch>
         </Container>
     </BrowserRouter> 

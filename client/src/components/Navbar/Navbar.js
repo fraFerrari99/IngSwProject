@@ -75,7 +75,7 @@ const Navbar = ({ setCurrentId, user, setUser }) => {
         open={isMenuOpen}
         onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            <MenuItem onClick={handleMenuClose} component={Link} to="/profile" >Profile</MenuItem>
             <MenuItem onClick={handleMenuClose} component={Link} to="/postJobOffer" >Post Job Offer</MenuItem>
             <MenuItem onClick={handleMenuClose}>Chat</MenuItem>
         </Menu>

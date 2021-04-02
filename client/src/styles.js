@@ -15,4 +15,7 @@ export default makeStyles(() => ({
       image: {
         marginLeft: '15px',
       },
+      mainComponent: {
+        backgroundColor: 'rgba(245, 245, 245, 1)',
+      }
 }));

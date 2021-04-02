@@ -10,7 +10,7 @@ const Home = ({ currentId, setCurrentId }) => {
             <Container>
                     <Grid container justify="space-between" alignItems="stretch" spacing={3}>
                         <Grid item xs={12} sm={7}>
-                            <JobOffers setCurrentId={setCurrentId} />
+                            <JobOffers setCurrentId={setCurrentId} currentId={currentId}/>
                         </Grid>
                     </Grid>
                 </Container>
