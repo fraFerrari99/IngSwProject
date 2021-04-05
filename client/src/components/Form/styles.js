@@ -36,5 +36,5 @@ export default makeStyles((theme) => ({
     '&:hover': {
       background: '#FF7F50',
     }
-  }
+  },
 }));

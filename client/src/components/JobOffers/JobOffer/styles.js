@@ -1,60 +1,10 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles({
-  /*
-  media: {
-    height: 0,
-    paddingTop: '56.25%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    backgroundBlendMode: 'darken',
-  },
-  border: {
-    border: 'solid',
-  },
-  fullHeightCard: {
-    height: '100%',
-  },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    borderRadius: '15px',
-    height: '100%',
-    position: 'relative',
-  },
-  overlay: {
-    position: 'absolute',
-    top: '20px',
-    left: '20px',
-    color: 'white',
-  },
-  overlay2: {
-    position: 'absolute',
-    top: '20px',
-    right: '20px',
-    color: 'white',
-  },
-  grid: {
-    display: 'flex',
-  },
-  details: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    margin: '20px',
-  },
-  title: {
-    padding: '0 16px',
-  },
-  cardActions: {
-    padding: '0 16px 8px 16px',
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-
-  */
 
   root: {
-    minWidth: 275,
+    minWidth: '275px',
+    maxHeight: '300px',
   },
   bullet: {
     display: 'inline-block',
@@ -71,4 +21,38 @@ export default makeStyles({
     float: "right",
     position: "relative",
   },
+  dispayDescription: {
+    overflow: 'hidden',
+    display: '-webkit-box',
+    "-webkit-line-clamp": 3,
+    "-webkit-box-orient": 'vertical',
+  },
+  displayDescriptionInModel: {
+    display: 'inline-block',
+    overflow: 'auto',
+    maxHeight: '350px',
+    whiteSpace: 'pre-line',
+  },
+  displayDescriptionInModelMobile: {
+    display: 'inline-block',
+    overflow: 'auto',
+    maxHeight: '250px',
+    whiteSpace: 'pre-wrap',
+  },
+  borderBottom: {
+    borderBottom: '1px solid gray', 
+    marginBottom: '8px', 
+    paddingBottom: '8px',
+  },
+  borderTop: {
+    borderTop: '1px solid gray', 
+    marginTop: '8px', 
+    paddingTop: '8px',
+  },
+  //only if not mobile
+  mainModalSpacing: {
+    marginLeft: '3%', 
+    marginTop: '3%', 
+    marginRight: '3%',
+  }
 });

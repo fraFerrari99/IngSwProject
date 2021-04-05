@@ -48,9 +48,9 @@ const Form = ({ currentId, setCurrentId }) => {
             <Paper className={classes.paper} elevation={3}>
                 <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
                     <Typography variant="h6"> {currentId ? 'Edit' : 'Create' } a Job Offer</Typography>
-                    <TextField name="company" variant="outlined" label="Company" fullWidth value={jobOfferData.company} onChange={(e) => setJobOfferData({ ...jobOfferData, company: e.target.value })} />
-                    <TextField name="title" variant="outlined" label="Title" fullWidth value={jobOfferData.title} onChange={(e) => setJobOfferData({ ...jobOfferData, title: e.target.value })} />
-                    <TextField name="desctiption" variant="outlined" label="Desctiption" fullWidth value={jobOfferData.description} onChange={(e) => setJobOfferData({ ...jobOfferData, description: e.target.value })} />
+                    <TextField name="company" variant="outlined" label="Company" required="true" fullWidth value={jobOfferData.company} onChange={(e) => setJobOfferData({ ...jobOfferData, company: e.target.value })} />
+                    <TextField name="title" variant="outlined" label="Title" required="true" fullWidth value={jobOfferData.title} onChange={(e) => setJobOfferData({ ...jobOfferData, title: e.target.value })} />
+                    <TextField multiline rowsMax={12} name="desctiption" variant="outlined" label="Desctiption" required="true" fullWidth value={jobOfferData.description} onChange={(e) => setJobOfferData({ ...jobOfferData, description: e.target.value })} />
                     <TextField name="requirements" variant="outlined" label="Requirements" fullWidth value={jobOfferData.requirements} onChange={(e) => setJobOfferData({ ...jobOfferData, requirements: e.target.value })} />
                     <TextField name="RAL" variant="outlined" label="RAL" fullWidth value={jobOfferData.RAL} onChange={(e) => setJobOfferData({ ...jobOfferData, RAL: e.target.value })} />
                     <div className={classes.fileInput}> <FileBase type="file" multiple={false} onDone={({base64}) => setJobOfferData({ ...jobOfferData, selectedFile: base64 }) } /> </div>
