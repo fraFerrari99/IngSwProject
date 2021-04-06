@@ -6,6 +6,9 @@ export default makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
+  mainContainer: {
+    marginLeft: '25%',
+  },
   form: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -21,7 +24,9 @@ export default makeStyles((theme) => ({
     color: 'rgb(255,255,255)',
     '&:hover': {
       background: '#6495ED',
-    }
+    },
+    marginLeft: '2px', 
+    marginRight: '2px',
   },
   paper: {
     marginTop: theme.spacing(2),
@@ -37,4 +42,8 @@ export default makeStyles((theme) => ({
       background: '#FF7F50',
     }
   },
+  footerMargin: {
+    marginLeft: '5px',
+    marginRight: '5px',
+  }
 }));

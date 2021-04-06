@@ -37,7 +37,7 @@ export default makeStyles({
     display: 'inline-block',
     overflow: 'auto',
     maxHeight: '250px',
-    whiteSpace: 'pre-wrap',
+    whiteSpace: 'pre-line',
   },
   borderBottom: {
     borderBottom: '1px solid gray', 

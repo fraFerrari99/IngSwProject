@@ -13,10 +13,9 @@ import { deleteJobOffer } from '../../../actions/jobOffers';
 
 import useStyles from './styles';
 
-const JobOffer = ({ jobOffer, setCurrentId, currentId }) => {
+const JobOffer = ({ jobOffer, setCurrentId }) => {
     Modal.setAppElement('#root');
 
-    var subtitle;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [modalIsOpen,setIsOpen] = React.useState(false);
@@ -60,12 +59,6 @@ const JobOffer = ({ jobOffer, setCurrentId, currentId }) => {
 
     var isMobile = window.mobileCheck();
 
-    function nl2br (str, is_xhtml) {
-      var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? "<br /> ": "<br>";
-      return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-      
-   } 
-
     //aggiugnere al model i dati dell'offerta di lavoro selezionata
 
     return (
@@ -84,7 +77,7 @@ const JobOffer = ({ jobOffer, setCurrentId, currentId }) => {
             
             { (jobOffer.RAL) && (
                 <Typography variant="body2" component="p">
-                    {jobOffer.RAL} €/year <br />
+                    {jobOffer.RAL} €/year
                 </Typography>
             )}
           </CardContent>
@@ -97,7 +90,7 @@ const JobOffer = ({ jobOffer, setCurrentId, currentId }) => {
                     <Typography variant="h5" component="h1" >
                       {jobOffer.title}
                     </Typography>
-                    <Typography style={{marginTop: '4px', marginBottom: '4px'}} className={classes.pos} color="textSecondary">
+                    <Typography style={{marginTop: '4px', marginBottom: '4px'}} className={classes.pos}  color="textSecondary">
                       {jobOffer.company}
                     </Typography>
                     {(jobOffer.RAL) && (
@@ -107,7 +100,7 @@ const JobOffer = ({ jobOffer, setCurrentId, currentId }) => {
                     )}  
                   </div>
                   
-                  <Typography className={`${classes.pos} ` + (isMobile ? `${classes.displayDescriptionInModelMobile}` : `${classes.displayDescriptionInModel}`)} variant="body2" component="p">
+                  <Typography className={(isMobile ? `${classes.displayDescriptionInModelMobile}` : `${classes.displayDescriptionInModel}`)} variant="body2" component="p">
                     {jobOffer.description}
                   </Typography>
 

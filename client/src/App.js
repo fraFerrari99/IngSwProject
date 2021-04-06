@@ -14,8 +14,6 @@ const App = () => {
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
 
-    //console.log(user);
-
     //used to pass JSX component to the children
     const _PostJobOffer = (props) => {
         return (
@@ -26,6 +24,12 @@ const App = () => {
     const _Home = (props) => {
         return (
           <Home currentId={currentId} setCurrentId={setCurrentId} {...props} />
+        );
+    }
+
+    const _Profile = (props) => {
+        return (
+          <Profile {...props} />
         );
     }
 
@@ -45,7 +49,7 @@ const App = () => {
                 <Route path="/" exact component={_Home}/>
                 <Route path="/postJobOffer" exact component={_PostJobOffer}/>
                 <Route path="/auth" exact component={Auth}/>
-                <Route path="/profile" exact component={Profile}/>
+                <Route path="/profile" exact component={_Profile}/>
             </Switch>
         </Container>
     </BrowserRouter> 
