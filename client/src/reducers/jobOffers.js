@@ -7,6 +7,7 @@ export default (jobOffers = [], action) => {
         case UPDATE:
             return jobOffers.map((jobOffer) => jobOffer._id == action.payload._id ? action.payload : jobOffer);
         case FETCH_ALL:
+            //return action.payload;
             return action.payload;
         case CREATE:
             return [ ... jobOffers, action.payload];

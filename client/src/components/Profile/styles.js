@@ -65,6 +65,11 @@ export default makeStyles((theme) => ({
     right:'20px',
     top: '20px',
   },
+  overlay5: {   //add icon conoscenze
+    position: 'absolute',
+    right:'20px',
+    top: '70px',
+  },
   grid: {
     display: 'flex',
   },

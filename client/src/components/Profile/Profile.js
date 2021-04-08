@@ -1,15 +1,52 @@
-import React from 'react';
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+import AddIcon from '@material-ui/icons/Add';
 
 import useStyles from './styles';
+import Skill from '../Skill/Skill';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
 import defaultBackground from '../../images/defaultBackground.PNG';
 
+import { getProfileDetails, createProfileDetails, deleteProfileDetails, updateProfileDetails } from '../../actions/profileDetails';
+
+const initialState = { description: '', level: '' };
+
 const Profile = () => {
+    const dispatch = useDispatch();
     const classes = useStyles();
     const user = JSON.parse(localStorage.getItem('profile'));
+    const userId = user?.result?.googleId;
+    const [skill, setSkill] = useState(initialState);
+    //const profileDetails = useSelector((state) => userId ? state.profileDetails?.find((p) => p.owner == userId) : null);
+    const test1 = useSelector((state) => state?.profileDetails);
+
+    const handleChange = (e) => {
+        setSkill({ ...skill, [e.target.name]: e.target.value });
+    };
+
+    useEffect(() => {
+        dispatch(getProfileDetails( userId ));
+    }, [userId, dispatch]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+        clear();
+    }
+
+    const clear = () => {
+        setSkill({ description: '', level: '' });
+    }
+
+    let skills = [
+        ['skill1', 'A'],
+        ['skill2', 'B'],
+        ['skill3', 'C'],
+    ]
 
     //controlla se il dispositivo è mobile
     window.mobileCheck = function () {
@@ -20,6 +57,7 @@ const Profile = () => {
 
     var isMobile = window.mobileCheck();
 
+    //if user not logged in
     if (!user?.result?.name) {
         return (
             <Grid item xs={12} sm={8}>
@@ -33,9 +71,7 @@ const Profile = () => {
     }
 
     return (
-
     <>
-
         <Card className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
             <CardMedia className={classes.media}  image={defaultBackground}/>
             <div className={classes.overlay2}> 
@@ -48,34 +84,74 @@ const Profile = () => {
                 <Button style={{color: '#4C4C4C'}} size="small"> <EditIcon fontSize="default" /> </Button> 
             </div>
             <div className={classes.profileComponents}>
-                <CardContent>
-                    <Typography variant="h5">{user.result.name}</Typography>
-                </CardContent>
-                <div style={{padding: '0 0 16px 16px'}}>
+                <div style={{padding: '0 16px 16px 16px'}}>
+                    <Typography style={{ padding: '0 0 5px 0' }} variant="h5">{user.result.name}</Typography>
                     <Typography variant="body2" color="textPrimary" component="p">Insert here the current working position.</Typography>
                     <Typography variant="body2" color="textPrimary" component="p">Insert here the city you live in.</Typography>
                 </div>
             </div>
         </Card>
 
-        <Card className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-            <div className={classes.overlay4}> 
+        <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
+            <div className={classes.overlay5}> 
                 <Button style={{color: '#4C4C4C'}} size="small"> <EditIcon fontSize="default" /> </Button> 
             </div>
-            <div className={classes.profileComponents}>
+            <div className={classes.overlay4}>
+                <Button style={{color: '#4C4C4C'}} size="small"> <AddIcon fontSize="default" /> </Button> 
+            </div>
+            <div style={{padding: '16px 16px 16px 16px'}}>
                 <CardContent>
-                    <Typography variant="h5">{user.result.name}</Typography>
+                    <Typography variant="h5">Skills</Typography>
                 </CardContent>
-                <div style={{padding: '0 0 16px 16px'}}>
-                    <Typography variant="body2" color="textPrimary" component="p">Insert here the current working position.</Typography>
-                    <Typography variant="body2" color="textPrimary" component="p">Insert here the city you live in.</Typography>
-                </div>
+                <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
+                    <Grid item xs={12} sm={6}>
+                        <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"skill description"}/>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField name="level" onChange={handleChange} variant="outlined" required fullWidth label={"skill level"}/>
+                    </Grid>
+                    <Button type="submit" size="large" variant="contained" color="primary">
+                        Add Skill
+                    </Button>
+
+                    <div>
+                        
+                        {( !test1 ) ? 'Insert here your skill.' : 
+                                <Grid>
+                                    {test1.skills}
+                                </Grid>
+                            }
+                    </div>
+                    
+                </form>
             </div>
         </Card>
-
     </>
-
     );
 };
 
 export default Profile;
+
+/*
+
+<div style={{padding: '0 16px 16px 16px'}}>
+                        <Typography variant="body2" color="textPrimary" component="p">
+
+                            {( !skills.length > 0 ) ? 'Insert here your skill.' : 
+                                <Grid>
+                                    {skills.map((skill) => (
+                                        <Grid item xs={12} sm={10}>
+                                            <Skill skill={skill}/>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            }
+
+                        </Typography>
+                    </div>
+
+
+
+
+                    {test1 ? test1 : 'no risultati'}
+*/
