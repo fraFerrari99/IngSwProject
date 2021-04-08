@@ -19,7 +19,7 @@ export const updateJobOffer = (id, updatedJobOffer) => API.patch(`/jobOffers/${i
 export const signIn = (formData) => API.post('/user/signin', formData);
 export const signUp = (formData) => API.post('/user/signup', formData);
 
-export const fetchProfileDetails = (id) => API.get(`/profile/profileDetails/${id}`).then(console.log('id ricevuto: ' + id));
+export const fetchProfileDetails = (id) => API.get(`/profile/profileDetails/${id}`);
 export const createProfileDetails = (newProfileDetails) => API.post('/profile/profileDetails', newProfileDetails);
 export const deleteProfileDetails = (id) => API.delete(`/profile/profileDetails/${id}`);
 export const updateProfileDetails = (id, updatedProfileDetails) => API.patch(`/profile/profileDetails/${id}`, updatedProfileDetails);

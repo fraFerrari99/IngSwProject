@@ -4,6 +4,7 @@ import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Pape
 import EditIcon from '@material-ui/icons/Edit';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import AddIcon from '@material-ui/icons/Add';
+import { useHistory } from 'react-router-dom';
 
 import useStyles from './styles';
 import Skill from '../Skill/Skill';
@@ -13,15 +14,16 @@ import defaultBackground from '../../images/defaultBackground.PNG';
 import { getProfileDetails, createProfileDetails, deleteProfileDetails, updateProfileDetails } from '../../actions/profileDetails';
 
 const initialState = { description: '', level: '' };
+var profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
 
 const Profile = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const classes = useStyles();
     const user = JSON.parse(localStorage.getItem('profile'));
     const userId = user?.result?.googleId;
     const [skill, setSkill] = useState(initialState);
     //const profileDetails = useSelector((state) => userId ? state.profileDetails?.find((p) => p.owner == userId) : null);
-    const test1 = useSelector((state) => state?.profileDetails);
 
     const handleChange = (e) => {
         setSkill({ ...skill, [e.target.name]: e.target.value });
@@ -31,10 +33,20 @@ const Profile = () => {
         dispatch(getProfileDetails( userId ));
     }, [userId, dispatch]);
 
+    useEffect(() => {
+        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
+    }, [userId, profileDetails]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+        try {
+            dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+            
+            history.push('/profile'); //back to profile after detail are created, to have them on localstorage
+        } catch (error) {
+            console.log(error);
+        }
         clear();
     }
 
@@ -116,9 +128,9 @@ const Profile = () => {
 
                     <div>
                         
-                        {( !test1 ) ? 'Insert here your skill.' : 
+                        {( !profileDetails ) ? 'Insert here your skill.' : 
                                 <Grid>
-                                    {test1.skills}
+                                    {profileDetails.skills}
                                 </Grid>
                             }
                     </div>

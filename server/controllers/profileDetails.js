@@ -6,10 +6,10 @@ export const getProfileDetails = async (req, res) => {
     const { id } = req.params;     //rinominato
     //const { owner } = req.body;
 
-    //if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No profile details with that id');
-
     try {
         const _ProfileDetails = await ProfileDetails.findOne({ owner: id });
+
+        if(!_ProfileDetails) return res.status(404).send('User has no profile details');
 
         console.log(_ProfileDetails);
 
