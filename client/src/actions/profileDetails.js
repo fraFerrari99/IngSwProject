@@ -8,7 +8,7 @@ export const getProfileDetails = (owner) => async(dispatch) => {
 
         const { data } = await api.fetchProfileDetails(owner);
         
-        console.log('data sent :' + data);
+        console.log('data sent(get) :' + data);
         
         dispatch({ type: PD_FETCH_ALL, payload: data });
 
@@ -29,6 +29,19 @@ export const createProfileDetails = (profileDetails) => async(dispatch) => {
 
 } 
 
+export const updateProfileDetails = (id, profileDetails) => async (dispatch) => {
+    try {
+
+        const { data } = await api.updateProfileDetails(id, profileDetails);
+
+        console.log('data sent(update) :' + data);
+
+        dispatch({ type: PD_UPDATE, payload: data});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const deleteProfileDetails = (id) => async (dispatch) => {
     try {
         await api.deleteProfileDetails(id);
@@ -39,12 +52,3 @@ export const deleteProfileDetails = (id) => async (dispatch) => {
     }
 }
 
-export const updateProfileDetails = (id, jobOffer) => async (dispatch) => {
-    try {
-        const { data } = await api.updateProfileDetails(id, jobOffer);
-
-        dispatch({ type: PD_UPDATE, payload: data});
-    } catch (error) {
-        console.log(error);
-    }
-}

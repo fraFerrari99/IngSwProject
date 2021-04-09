@@ -21,9 +21,10 @@ const Profile = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const user = JSON.parse(localStorage.getItem('profile'));
-    const userId = user?.result?.googleId;
+    var userId = null;
+    (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
+    
     const [skill, setSkill] = useState(initialState);
-    //const profileDetails = useSelector((state) => userId ? state.profileDetails?.find((p) => p.owner == userId) : null);
 
     const handleChange = (e) => {
         setSkill({ ...skill, [e.target.name]: e.target.value });
@@ -32,23 +33,30 @@ const Profile = () => {
     useEffect(() => {
         dispatch(getProfileDetails( userId ));
     }, [userId, dispatch]);
-
-    useEffect(() => {
-        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
-    }, [userId, profileDetails]);
-
+    
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        //console.log('(handlesubmit) skill: ' + skill.description + '-' + skill.level + ', owner: ' + user?.result?.name );
         
         try {
-            dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+            if(!profileDetails)
+                dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+            else
+                dispatch(updateProfileDetails( userId, {...skill, owner: user?.result?.name }));
             
             history.push('/profile'); //back to profile after detail are created, to have them on localstorage
         } catch (error) {
             console.log(error);
         }
+        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
         clear();
     }
+    
+    useEffect(() => {
+        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
+    }, [userId, profileDetails, handleSubmit]);
+
 
     const clear = () => {
         setSkill({ description: '', level: '' });

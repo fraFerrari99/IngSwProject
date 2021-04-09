@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
-
 import ProfileDetails from '../models/profileDetails.js';
 
 export const getProfileDetails = async (req, res) => {
     const { id } = req.params;     //rinominato
-    //const { owner } = req.body;
 
     try {
         const _ProfileDetails = await ProfileDetails.findOne({ owner: id });
@@ -36,12 +34,30 @@ export const createProfileDetails = async (req, res) => {
 };
 
 export const updateProfileDetails = async ( req, res ) => {
-    const { id: _id } = req.params;     //rinominato
-    const profileDetails = req.body;
+    const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('No Profile Details with that id');
+    const { description, level } = req.body;
 
-    const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ...profileDetails, _id}, { new: true });
+    var newSkill = `${description}$${level}$`;
+
+    console.log('current id(update): ' + id);
+    console.log('current newSkill(update): ' + newSkill);
+
+    var _ProfileDetails = await ProfileDetails.findOne({ owner: id });
+
+    console.log('current _profileDetails(update) : ' + _ProfileDetails);
+
+    if(!_ProfileDetails) return res.status(404).send('User has no profile details(update)');
+
+    const _id = _ProfileDetails._id;
+
+    newSkill = newSkill.concat(_ProfileDetails.skills);
+
+    console.log('updated skills(update) : ' + newSkill);
+
+    _ProfileDetails.skills = newSkill;
+
+    const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ..._ProfileDetails }, { new: true });
 
     res.json(updatedProfileDetails);
 };

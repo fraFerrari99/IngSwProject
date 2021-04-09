@@ -5,11 +5,12 @@ export default (state = { profileDetails: null }, action) => {
         case PD_DELETE:
             return action.payload;
         case PD_UPDATE:
-            return action.payload;
+            localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
+            console.log('action.data(update): ' + action.payload);
         case PD_FETCH_ALL:
             //state.profileDetails = action.payload;
             localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
-            console.log('action.data: ' + action.payload);
+            console.log('action.data(get): ' + action.payload);
             return { ...state, profileDetails: action.payload };
         case PD_CREATE:
             return [ ... state, action.payload];
