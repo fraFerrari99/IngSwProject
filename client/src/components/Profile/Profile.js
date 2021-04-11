@@ -7,20 +7,19 @@ import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
 
 import useStyles from './styles';
-import Skill from '../Skill/Skill';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
 import defaultBackground from '../../images/defaultBackground.PNG';
+import Skill from '../Skill/Skill';
 
 import { getProfileDetails, createProfileDetails, deleteProfileDetails, updateProfileDetails } from '../../actions/profileDetails';
 
 const initialState = { description: '', level: '' };
-var profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
 
-const Profile = () => {
+const Profile = ({user}) => {
     const history = useHistory();
     const dispatch = useDispatch();
     const classes = useStyles();
-    const user = JSON.parse(localStorage.getItem('profile'));
+    const [profileDetails, setProfileDetails] = useState(null);
     var userId = null;
     (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
     
@@ -30,43 +29,39 @@ const Profile = () => {
         setSkill({ ...skill, [e.target.name]: e.target.value });
     };
 
-    useEffect(() => {
-        dispatch(getProfileDetails( userId ));
-    }, [userId, dispatch]);
+    var cont1 = 0, cont2 = 0, cont3 = 0;
+
+    useEffect(() => async () => {
+        await dispatch(getProfileDetails( userId ));
+        cont1++;
+        console.log('contatore 1: ' + cont1);
+    }, [userId, window.location]);
     
     const handleSubmit = (e) => {
+        cont2++;
+        console.log('contatore 2: ' + cont2);
         e.preventDefault();
-
-        //console.log('(handlesubmit) skill: ' + skill.description + '-' + skill.level + ', owner: ' + user?.result?.name );
         
         try {
             if(!profileDetails)
                 dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
             else
                 dispatch(updateProfileDetails( userId, {...skill, owner: user?.result?.name }));
-            
-            history.push('/profile'); //back to profile after detail are created, to have them on localstorage
         } catch (error) {
             console.log(error);
         }
-        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
         clear();
     }
     
     useEffect(() => {
-        profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
-    }, [userId, profileDetails, handleSubmit]);
-
+        cont3++;
+        console.log('contatore 3: ' + cont3);
+        setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
+    }, [dispatch]);
 
     const clear = () => {
         setSkill({ description: '', level: '' });
     }
-
-    let skills = [
-        ['skill1', 'A'],
-        ['skill2', 'B'],
-        ['skill3', 'C'],
-    ]
 
     //controlla se il dispositivo è mobile
     window.mobileCheck = function () {
@@ -123,12 +118,12 @@ const Profile = () => {
                 <CardContent>
                     <Typography variant="h5">Skills</Typography>
                 </CardContent>
-                <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"skill description"}/>
+                <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
+                    <Grid style={{gridTemplateColumns: '3fr 1fr 1fr', display: 'flex' }} item xs={12} sm={6}>
+                        <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField name="level" onChange={handleChange} variant="outlined" required fullWidth label={"skill level"}/>
+                    <Grid item xs={12} sm={3}>
+                        <TextField name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
                     </Grid>
                     <Button type="submit" size="large" variant="contained" color="primary">
                         Add Skill
@@ -137,10 +132,13 @@ const Profile = () => {
                     <div>
                         
                         {( !profileDetails ) ? 'Insert here your skill.' : 
-                                <Grid>
-                                    {profileDetails.skills}
-                                </Grid>
-                            }
+                            <Grid>
+                                {profileDetails.skills.map((skill, index) => (
+                                    <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill}/>
+                                ))}
+                            </Grid>
+                        }
+                        
                     </div>
                     
                 </form>
@@ -170,8 +168,10 @@ export default Profile;
                         </Typography>
                     </div>
 
+                    {( !profileDetails ) ? 'Insert here your skill.' : 
+                                <Grid>
+                                    {profileDetails.skills}
+                                </Grid>
+                        }
 
-
-
-                    {test1 ? test1 : 'no risultati'}
 */

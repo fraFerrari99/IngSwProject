@@ -15,6 +15,7 @@ const App = () => {
     const dispatch = useDispatch();
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+    const [profileDetails, setProfileDetails] = useState(JSON.parse(localStorage.getItem('profileDetails')));
 
     //used to pass JSX component to the children
     const _PostJobOffer = (props) => {
@@ -31,7 +32,7 @@ const App = () => {
 
     const _Profile = (props) => {
         return (
-          <Profile {...props} />
+          <Profile profileDetails={profileDetails} setProfileDetails={setProfileDetails} user={user} {...props} />
         );
     }
 
@@ -46,7 +47,7 @@ const App = () => {
     return (
     <BrowserRouter>
         <Container maxidth="lg">
-            <Navbar setCurrentId={setCurrentId} user={user} setUser={setUser}/>
+            <Navbar setCurrentId={setCurrentId} user={user} setUser={setUser} setProfileDetails={setProfileDetails}/>
             <Switch>
                 <Route path="/" exact component={_Home}/>
                 <Route path="/postJobOffer" exact component={_PostJobOffer}/>

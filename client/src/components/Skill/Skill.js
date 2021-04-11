@@ -3,15 +3,17 @@ import { Card, CardActions, CardContent, CardMedia, Button, Typography, Grid, Pa
 
 import useStyles from './styles';
 
-const Skill = ({ skill }) => {
+const Skill = ({ index, arrayLength, skill  }) => {
 
-    const description = skill[0];
-    const experience = skill[1];
+    const classes = useStyles();
+
+    const res = skill.split('$');
+    const description = res[0];
+    const experience = res[1];
 
     return (
     <div>
-        <Typography>{description}</Typography>
-        <Typography>{experience}</Typography>
+        <Typography className={`${classes.base} ` + (index<arrayLength-1 && `${classes.borderBottom}`)} >{description}:{experience}</Typography>
     </div>
     );
 };

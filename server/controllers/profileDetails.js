@@ -20,8 +20,8 @@ export const getProfileDetails = async (req, res) => {
 export const createProfileDetails = async (req, res) => {
     const { description, level } = req.body;
 
-    const newSkill = `${description}$${level}$`;    //skills trasformate in stringa, $ per dividere ( fare in modo che non possa essere inserito!! )
-
+    const newSkill = `${description}$${level}`;
+    
     const newProfile = new ProfileDetails({ skills: newSkill , owner: req.userId });
 
     try {
@@ -38,24 +38,26 @@ export const updateProfileDetails = async ( req, res ) => {
 
     const { description, level } = req.body;
 
-    var newSkill = `${description}$${level}$`;
-
-    console.log('current id(update): ' + id);
-    console.log('current newSkill(update): ' + newSkill);
+    var newSkill = `${description}$${level}`;
 
     var _ProfileDetails = await ProfileDetails.findOne({ owner: id });
 
-    console.log('current _profileDetails(update) : ' + _ProfileDetails);
-
-    if(!_ProfileDetails) return res.status(404).send('User has no profile details(update)');
+    if(!_ProfileDetails) return res.status(404).send('User has no profile details, cannot update profile!');
 
     const _id = _ProfileDetails._id;
 
-    newSkill = newSkill.concat(_ProfileDetails.skills);
+    var flag = false; var i = 0;
 
-    console.log('updated skills(update) : ' + newSkill);
+    while(i < _ProfileDetails.skills.length){
+        if(_ProfileDetails.skills[i].split('$',1).join().toUpperCase() === description.toUpperCase()){
+            _ProfileDetails.skills[i] = newSkill;
+            flag = true;
+            break;
+        }
+        i++;
+    }
 
-    _ProfileDetails.skills = newSkill;
+    (!flag) && _ProfileDetails.skills.push(newSkill);
 
     const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ..._ProfileDetails }, { new: true });
 
