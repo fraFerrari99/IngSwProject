@@ -5,6 +5,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
+import Modal from 'react-modal';
+import FileBase from 'react-file-base64';
 
 import useStyles from './styles';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
@@ -13,54 +15,103 @@ import Skill from '../Skill/Skill';
 
 import { getProfileDetails, createProfileDetails, deleteProfileDetails, updateProfileDetails } from '../../actions/profileDetails';
 
-const initialState = { description: '', level: '' };
+const initialStateSkill = { description: '', level: '' };
+const initialStateProfileData = { skill: '', profilePicture: null, backgroundPicture: null }
 
 const Profile = ({user}) => {
+    Modal.setAppElement('#root');
     const history = useHistory();
     const dispatch = useDispatch();
     const classes = useStyles();
-    const [profileDetails, setProfileDetails] = useState(null);
+    const [isProfile, setIsProfile] = useState(false);
+    
+    const [profileDetails, setProfileDetails] = useState(null);     //profileData client side
     var userId = null;
+    var currentFile = null;
     (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
     
-    const [skill, setSkill] = useState(initialState);
+    const [_skill, setSkill] = useState(initialStateSkill);  //keeps track of desc and level until handleSubmit, then inserted into skill
+    const [profileData, setProfileData] = useState(initialStateProfileData);    //profileData to update server-side
+    const [modalIsOpen,setIsOpen] = React.useState(false);
+
+    //roba per modal
+    function openModal() {
+          setIsOpen(true);
+        }
+    function afterOpenModal() {
+        // references are now sync'd and can be accessed.
+        //subtitle.style.color = '#f00';
+    }
+    function closeModal(){
+        setIsOpen(false);
+    }
+    //modal style
+    const customStyles = {
+        content : {
+        top                   : '50%',
+        left                  : '50%',
+        right                 : '30%',
+        bottom                : 'auto',
+        marginRight           : '-50%',
+        transform             : 'translate(-50%, -50%)',
+        }, 
+        overlay: {
+        background: 'rgba(0,0,0, 0.5)',
+        },
+    };
+    
 
     const handleChange = (e) => {
-        setSkill({ ...skill, [e.target.name]: e.target.value });
+        setSkill({ ..._skill, [e.target.name]: e.target.value });
     };
 
-    var cont1 = 0, cont2 = 0, cont3 = 0;
+    //funzioni che servono a differenziare i bottoni che editano la foto profilo/foto background
+    //isProfile == true => editare foto profilo, isProfile == false => editare foto background
+    function openModalOpt1() {
+        setIsProfile(false);
+        openModal();
+    }
 
-    useEffect(() => async () => {
-        await dispatch(getProfileDetails( userId ));
-        cont1++;
-        console.log('contatore 1: ' + cont1);
+    function openModalOpt2() {
+        setIsProfile(true);
+        openModal();
+    }
+
+    useEffect(() => {
+        dispatch(getProfileDetails( userId ));
     }, [userId, window.location]);
     
     const handleSubmit = (e) => {
-        cont2++;
-        console.log('contatore 2: ' + cont2);
         e.preventDefault();
         
         try {
             if(!profileDetails)
-                dispatch(createProfileDetails({ ...skill, owner: user?.result?.name }));
+                dispatch(createProfileDetails({ ...profileData, skill: _skill.description + '$' + _skill.level }));
             else
-                dispatch(updateProfileDetails( userId, {...skill, owner: user?.result?.name }));
+                dispatch(updateProfileDetails( userId, {...profileData, skill: _skill.description + '$' + _skill.level }));
         } catch (error) {
             console.log(error);
         }
+
+         //refresh pagina automatico, implementare useContext
+         history.push('/profile');
+
         clear();
     }
     
     useEffect(() => {
-        cont3++;
-        console.log('contatore 3: ' + cont3);
         setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
     }, [dispatch]);
 
     const clear = () => {
-        setSkill({ description: '', level: '' });
+        setSkill(initialStateSkill);
+    }
+
+    const updatePicture = () => {
+        isProfile ? dispatch(updateProfileDetails( userId, {...profileData, profilePicture: currentFile })) :
+        dispatch(updateProfileDetails( userId, {...profileData, backgroundPicture: currentFile }));       
+
+        closeModal();
     }
 
     //controlla se il dispositivo è mobile
@@ -75,7 +126,7 @@ const Profile = ({user}) => {
     //if user not logged in
     if (!user?.result?.name) {
         return (
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} sm={12}>
                 <Paper className={classes.paper}>
                     <Typography variant="h6" align="center">
                         Please Sign In to view your Profile.
@@ -84,19 +135,19 @@ const Profile = ({user}) => {
             </Grid>
         )
     }
-
+    
     return (
     <>
         <Card className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-            <CardMedia className={classes.media}  image={defaultBackground}/>
+            <CardMedia className={classes.media}  image={profileDetails?.backgroundPicture || defaultBackground}/>
             <div className={classes.overlay2}> 
-                <Button style={{color: 'white'}} size="small"> <PhotoCameraIcon fontSize="default" /> </Button> 
+                <Button style={{color: 'white'}} size="small" onClick={openModalOpt1}> <PhotoCameraIcon fontSize="default" /> </Button> 
             </div>
             <div> 
-                <img className={classes.image} src={dafaultProfilePicture} alt="profile picture"  height="140" />
+                <img className={classes.image} src={profileDetails?.profilePicture || dafaultProfilePicture} alt="profile picture"  height="140" onClick={openModalOpt2}/>
             </div>
             <div className={classes.overlay3}> 
-                <Button style={{color: '#4C4C4C'}} size="small"> <EditIcon fontSize="default" /> </Button> 
+                <Button style={{color: '#4C4C4C'}} size="small" onClick={openModalOpt2}> <EditIcon fontSize="default" /> </Button> 
             </div>
             <div className={classes.profileComponents}>
                 <div style={{padding: '0 16px 16px 16px'}}>
@@ -106,6 +157,18 @@ const Profile = ({user}) => {
                 </div>
             </div>
         </Card>
+
+        <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="Edit Profile Details" >
+            <div className={(!isMobile && `${classes.mainModalSpacing}`)}>
+                <Typography variant="h5" component="h1" align="center" >
+                    Please enter your Profile {isProfile ? 'Picture' : 'Background Picture'}
+                    <div className={`${classes.fileInput}`}> <FileBase type="file" multiple={false} onDone={({base64}) => currentFile = base64 } /> </div>
+                </Typography>
+                <Button onClick={updatePicture} size="medium" variant="contained" color="primary">
+                        Update Picture
+                </Button>
+            </div>
+        </Modal>
 
         <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
             <div className={classes.overlay5}> 
@@ -119,18 +182,19 @@ const Profile = ({user}) => {
                     <Typography variant="h5">Skills</Typography>
                 </CardContent>
                 <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
-                    <Grid style={{gridTemplateColumns: '3fr 1fr 1fr', display: 'flex' }} item xs={12} sm={6}>
-                        <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
+                    <Grid containter>
+                        <Grid item xs={12} sm={8}>
+                            <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <TextField name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
+                        </Grid>
+                        <Button type="submit" size="large" variant="contained" color="primary">
+                            Add Skill
+                        </Button>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                        <TextField name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
-                    </Grid>
-                    <Button type="submit" size="large" variant="contained" color="primary">
-                        Add Skill
-                    </Button>
 
                     <div>
-                        
                         {( !profileDetails ) ? 'Insert here your skill.' : 
                             <Grid>
                                 {profileDetails.skills.map((skill, index) => (
@@ -138,7 +202,6 @@ const Profile = ({user}) => {
                                 ))}
                             </Grid>
                         }
-                        
                     </div>
                     
                 </form>
@@ -149,29 +212,3 @@ const Profile = ({user}) => {
 };
 
 export default Profile;
-
-/*
-
-<div style={{padding: '0 16px 16px 16px'}}>
-                        <Typography variant="body2" color="textPrimary" component="p">
-
-                            {( !skills.length > 0 ) ? 'Insert here your skill.' : 
-                                <Grid>
-                                    {skills.map((skill) => (
-                                        <Grid item xs={12} sm={10}>
-                                            <Skill skill={skill}/>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            }
-
-                        </Typography>
-                    </div>
-
-                    {( !profileDetails ) ? 'Insert here your skill.' : 
-                                <Grid>
-                                    {profileDetails.skills}
-                                </Grid>
-                        }
-
-*/

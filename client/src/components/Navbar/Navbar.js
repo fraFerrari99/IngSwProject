@@ -47,6 +47,8 @@ const Navbar = ({ setCurrentId, user, setUser }) => {
     const logout = () => {
         dispatch({ type: 'LOGOUT' });
 
+        localStorage.removeItem('profileDetails');
+
         history.push('/');
         setUser(null);
     };

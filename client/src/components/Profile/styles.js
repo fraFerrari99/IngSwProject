@@ -38,6 +38,7 @@ export default makeStyles((theme) => ({
     top: '100px',
     position: 'absolute',
     borderRadius: '50%',
+    cursor: 'pointer',
   },
   profileComponents: {
     marginTop: '70px',
@@ -82,5 +83,9 @@ export default makeStyles((theme) => ({
     padding: '0 16px 8px 16px',
     display: 'flex',
     justifyContent: 'space-between',
-  }
+  },
+  fileInput: {
+    width: '97%',
+    margin: '10px 0',
+  },
 }));

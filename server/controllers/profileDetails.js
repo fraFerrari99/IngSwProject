@@ -9,7 +9,7 @@ export const getProfileDetails = async (req, res) => {
 
         if(!_ProfileDetails) return res.status(404).send('User has no profile details');
 
-        console.log(_ProfileDetails);
+        //console.log(_ProfileDetails);
 
         res.status(200).json(_ProfileDetails);
     } catch (error) {
@@ -18,11 +18,9 @@ export const getProfileDetails = async (req, res) => {
 };
 
 export const createProfileDetails = async (req, res) => {
-    const { description, level } = req.body;
-
-    const newSkill = `${description}$${level}`;
+    const profileDetails = req.body;
     
-    const newProfile = new ProfileDetails({ skills: newSkill , owner: req.userId });
+    const newProfile = new ProfileDetails({ ...profileDetails , skills: profileDetails.skill,  owner: req.userId });
 
     try {
         await newProfile.save();
@@ -36,9 +34,15 @@ export const createProfileDetails = async (req, res) => {
 export const updateProfileDetails = async ( req, res ) => {
     const { id } = req.params;
 
-    const { description, level } = req.body;
+    const profileDetails = req.body;
 
-    var newSkill = `${description}$${level}`;
+    //console.log(profileDetails);
+
+    const description = profileDetails.skill.split('$',1).join();
+
+    const _profilePicture = profileDetails.profilePicture;
+    
+    const _backgroundPicture = profileDetails.backgroundPicture;
 
     var _ProfileDetails = await ProfileDetails.findOne({ owner: id });
 
@@ -46,22 +50,42 @@ export const updateProfileDetails = async ( req, res ) => {
 
     const _id = _ProfileDetails._id;
 
-    var flag = false; var i = 0;
+    var flag = false; var i = 0; var atLeastOneChange = false;
 
-    while(i < _ProfileDetails.skills.length){
-        if(_ProfileDetails.skills[i].split('$',1).join().toUpperCase() === description.toUpperCase()){
-            _ProfileDetails.skills[i] = newSkill;
-            flag = true;
-            break;
+    //if description != initial string, then update with new skill
+    if(description != ''){
+        atLeastOneChange = true;
+        while(i < _ProfileDetails.skills.length){
+            if(_ProfileDetails.skills[i].split('$',1).join().toUpperCase() === description.toUpperCase()){
+                _ProfileDetails.skills[i] = profileDetails.skill;
+                flag = true;
+                break;
+            }
+            i++;
         }
-        i++;
+    
+        (!flag) && _ProfileDetails.skills.push(profileDetails.skill);
     }
 
-    (!flag) && _ProfileDetails.skills.push(newSkill);
+    if(_profilePicture != null){
+        atLeastOneChange = true;
+        _ProfileDetails.profilePicture = _profilePicture;
+    }
 
-    const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ..._ProfileDetails }, { new: true });
+    if(_backgroundPicture != null){
+        atLeastOneChange = true;
+        _ProfileDetails.backgroundPicture = _backgroundPicture;
+    }
 
-    res.json(updatedProfileDetails);
+    if(atLeastOneChange){
+        const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ..._ProfileDetails }, { new: true });
+
+        res.json(updatedProfileDetails);
+
+        return;
+    }
+
+    return res.status(404).send('No changes made');
 };
 
 export const deleteProfileDetails = async ( req, res ) => {
