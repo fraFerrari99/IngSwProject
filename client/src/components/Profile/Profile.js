@@ -24,15 +24,26 @@ const Profile = ({user}) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const [isProfile, setIsProfile] = useState(false);
+    const [modalIsOpen,setIsOpen] = React.useState(false);
     
     const [profileDetails, setProfileDetails] = useState(null);     //profileData client side
     var userId = null;
-    var currentFile = null;
+    var currentFile = null; var clearValue = false;
     (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
     
     const [_skill, setSkill] = useState(initialStateSkill);  //keeps track of desc and level until handleSubmit, then inserted into skill
     const [profileData, setProfileData] = useState(initialStateProfileData);    //profileData to update server-side
-    const [modalIsOpen,setIsOpen] = React.useState(false);
+
+
+    //update localstorage
+    const eventListenerFun = e => {
+        setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
+    };
+    useEffect(() => {
+        window.addEventListener("storage", eventListenerFun);
+    
+        return () => window.removeEventListener("storage", eventListenerFun);
+      }, []);
 
     //roba per modal
     function openModal() {
@@ -60,8 +71,9 @@ const Profile = ({user}) => {
         },
     };
     
-
+    //ecco il colpevole
     const handleChange = (e) => {
+        //clearValue ? setSkill({ ..._skill, [e.target.name]: e.target.value }) : clearValue = !clearValue;
         setSkill({ ..._skill, [e.target.name]: e.target.value });
     };
 
@@ -83,6 +95,8 @@ const Profile = ({user}) => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        console.log('(cosa passo)desc: ' + _skill.description + ', lev: ' + _skill.level);
         
         try {
             if(!profileDetails)
@@ -92,19 +106,17 @@ const Profile = ({user}) => {
         } catch (error) {
             console.log(error);
         }
-
-         //refresh pagina automatico, implementare useContext
-         history.push('/profile');
-
         clear();
     }
     
     useEffect(() => {
         setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
-    }, [dispatch]);
+    }, [userId]);
 
     const clear = () => {
         setSkill(initialStateSkill);
+        document.getElementById('idDescription').value = '';
+        document.getElementById('idLevel').value = '';
     }
 
     const updatePicture = () => {
@@ -184,10 +196,10 @@ const Profile = ({user}) => {
                 <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
                     <Grid containter>
                         <Grid item xs={12} sm={8}>
-                            <TextField name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
+                            <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
                         </Grid>
                         <Grid item xs={12} sm={3}>
-                            <TextField name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
+                            <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
                         </Grid>
                         <Button type="submit" size="large" variant="contained" color="primary">
                             Add Skill

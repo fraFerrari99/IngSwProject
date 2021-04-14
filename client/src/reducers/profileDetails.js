@@ -7,6 +7,8 @@ export default (state = { profileDetails: null }, action) => {
         case PD_UPDATE:
             localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
             console.log('action.data(update): ' + action.payload);
+            window.dispatchEvent(new Event("storage"));
+            return { ...state, profileDetails: action.payload };
         case PD_FETCH_ALL:
             //state.profileDetails = action.payload;
             localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
