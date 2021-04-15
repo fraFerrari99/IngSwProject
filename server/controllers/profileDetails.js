@@ -20,7 +20,8 @@ export const getProfileDetails = async (req, res) => {
 export const createProfileDetails = async (req, res) => {
     const profileDetails = req.body;
     
-    const newProfile = new ProfileDetails({ ...profileDetails , skills: profileDetails.skill,  owner: req.userId });
+    //const newProfile = new ProfileDetails({ ...profileDetails , skills: profileDetails.skill,  owner: req.userId, backgroundPicture: profileDetails.backgroundPicture, profilePicture: profileDetails.profilePicture });
+    const newProfile = new ProfileDetails({ skills: profileDetails.skill,  owner: req.userId, backgroundPicture: profileDetails.backgroundPicture, profilePicture: profileDetails.profilePicture });
 
     try {
         await newProfile.save();

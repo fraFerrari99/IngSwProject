@@ -36,7 +36,7 @@ export const updateProfileDetails = (id, profileDetails) => async (dispatch) => 
 
         console.log('data sent(update) :' + data);
 
-        const state = dispatch({ type: PD_UPDATE, payload: data});
+        dispatch({ type: PD_UPDATE, payload: data});
 
     } catch (error) {
         console.log(error);

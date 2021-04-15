@@ -66,10 +66,10 @@ export default makeStyles((theme) => ({
     right:'20px',
     top: '20px',
   },
-  overlay5: {   //add icon conoscenze
+  overlay5: {   //delete icon conoscenze
     position: 'absolute',
     right:'20px',
-    top: '70px',
+    top: '55px',
   },
   grid: {
     display: 'flex',
@@ -87,5 +87,13 @@ export default makeStyles((theme) => ({
   fileInput: {
     width: '97%',
     margin: '10px 0',
+  },
+  gridContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginLeft: '10px',
+  },
+  marginLeft: {
+    marginLeft: '10px',
   },
 }));

@@ -5,7 +5,6 @@ export default makeStyles((theme) => ({
         borderBottom: '1px solid gray'
         },
     base: {
-        wordSpacing: '30px',
         padding: '16px 16px 16px 16px',
     }
 }));

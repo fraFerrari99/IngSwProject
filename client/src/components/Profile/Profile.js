@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
+import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import DoneIcon from '@material-ui/icons/Done';
+import ClearIcon from '@material-ui/icons/Clear';
 import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import AddIcon from '@material-ui/icons/Add';
-import { useHistory } from 'react-router-dom';
 import Modal from 'react-modal';
 import FileBase from 'react-file-base64';
 
@@ -20,15 +21,15 @@ const initialStateProfileData = { skill: '', profilePicture: null, backgroundPic
 
 const Profile = ({user}) => {
     Modal.setAppElement('#root');
-    const history = useHistory();
     const dispatch = useDispatch();
     const classes = useStyles();
     const [isProfile, setIsProfile] = useState(false);
+    const [showFormSkills, setShowFormSkills] = useState(false);
     const [modalIsOpen,setIsOpen] = React.useState(false);
     
     const [profileDetails, setProfileDetails] = useState(null);     //profileData client side
     var userId = null;
-    var currentFile = null; var clearValue = false;
+    var currentFile = null;
     (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
     
     const [_skill, setSkill] = useState(initialStateSkill);  //keeps track of desc and level until handleSubmit, then inserted into skill
@@ -71,9 +72,7 @@ const Profile = ({user}) => {
         },
     };
     
-    //ecco il colpevole
     const handleChange = (e) => {
-        //clearValue ? setSkill({ ..._skill, [e.target.name]: e.target.value }) : clearValue = !clearValue;
         setSkill({ ..._skill, [e.target.name]: e.target.value });
     };
 
@@ -95,8 +94,6 @@ const Profile = ({user}) => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        console.log('(cosa passo)desc: ' + _skill.description + ', lev: ' + _skill.level);
         
         try {
             if(!profileDetails)
@@ -120,8 +117,13 @@ const Profile = ({user}) => {
     }
 
     const updatePicture = () => {
-        isProfile ? dispatch(updateProfileDetails( userId, {...profileData, profilePicture: currentFile })) :
-        dispatch(updateProfileDetails( userId, {...profileData, backgroundPicture: currentFile }));       
+        if(profileDetails){
+            isProfile ? dispatch(updateProfileDetails( userId, {...profileData, profilePicture: currentFile })) :
+            dispatch(updateProfileDetails( userId, {...profileData, backgroundPicture: currentFile }));       
+        } else {
+            isProfile ? dispatch(createProfileDetails({...profileData, profilePicture: currentFile })) :
+            dispatch(createProfileDetails({...profileData, backgroundPicture: currentFile }));    
+        }
 
         closeModal();
     }
@@ -149,77 +151,89 @@ const Profile = ({user}) => {
     }
     
     return (
-    <>
-        <Card className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-            <CardMedia className={classes.media}  image={profileDetails?.backgroundPicture || defaultBackground}/>
-            <div className={classes.overlay2}> 
-                <Button style={{color: 'white'}} size="small" onClick={openModalOpt1}> <PhotoCameraIcon fontSize="default" /> </Button> 
-            </div>
-            <div> 
-                <img className={classes.image} src={profileDetails?.profilePicture || dafaultProfilePicture} alt="profile picture"  height="140" onClick={openModalOpt2}/>
-            </div>
-            <div className={classes.overlay3}> 
-                <Button style={{color: '#4C4C4C'}} size="small" onClick={openModalOpt2}> <EditIcon fontSize="default" /> </Button> 
-            </div>
-            <div className={classes.profileComponents}>
-                <div style={{padding: '0 16px 16px 16px'}}>
-                    <Typography style={{ padding: '0 0 5px 0' }} variant="h5">{user.result.name}</Typography>
-                    <Typography variant="body2" color="textPrimary" component="p">Insert here the current working position.</Typography>
-                    <Typography variant="body2" color="textPrimary" component="p">Insert here the city you live in.</Typography>
-                </div>
-            </div>
-        </Card>
-
-        <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="Edit Profile Details" >
-            <div className={(!isMobile && `${classes.mainModalSpacing}`)}>
-                <Typography variant="h5" component="h1" align="center" >
-                    Please enter your Profile {isProfile ? 'Picture' : 'Background Picture'}
-                    <div className={`${classes.fileInput}`}> <FileBase type="file" multiple={false} onDone={({base64}) => currentFile = base64 } /> </div>
-                </Typography>
-                <Button onClick={updatePicture} size="medium" variant="contained" color="primary">
-                        Update Picture
-                </Button>
-            </div>
-        </Modal>
-
-        <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-            <div className={classes.overlay5}> 
-                <Button style={{color: '#4C4C4C'}} size="small"> <EditIcon fontSize="default" /> </Button> 
-            </div>
-            <div className={classes.overlay4}>
-                <Button style={{color: '#4C4C4C'}} size="small"> <AddIcon fontSize="default" /> </Button> 
-            </div>
-            <div style={{padding: '16px 16px 16px 16px'}}>
-                <CardContent>
-                    <Typography variant="h5">Skills</Typography>
-                </CardContent>
-                <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
-                    <Grid containter>
-                        <Grid item xs={12} sm={8}>
-                            <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
-                        </Grid>
-                        <Button type="submit" size="large" variant="contained" color="primary">
-                            Add Skill
-                        </Button>
-                    </Grid>
-
-                    <div>
-                        {( !profileDetails ) ? 'Insert here your skill.' : 
-                            <Grid>
-                                {profileDetails.skills.map((skill, index) => (
-                                    <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill}/>
-                                ))}
-                            </Grid>
-                        }
+        <>
+            <Grow in>
+                <Card className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
+                    <CardMedia className={classes.media}  image={profileDetails?.backgroundPicture || defaultBackground}/>
+                    <div className={classes.overlay2}> 
+                        <Button style={{color: 'white'}} size="small" onClick={openModalOpt1}> <PhotoCameraIcon fontSize="default" /> </Button> 
                     </div>
-                    
-                </form>
-            </div>
-        </Card>
-    </>
+                    <div> 
+                        <img className={classes.image} src={profileDetails?.profilePicture || dafaultProfilePicture} alt="profile picture"  height="140" onClick={openModalOpt2}/>
+                    </div>
+                    <div className={classes.overlay3}> 
+                        <Button style={{color: '#4C4C4C'}} size="small" onClick={openModalOpt2}> <EditIcon fontSize="default" /> </Button> 
+                    </div>
+                    <div className={classes.profileComponents}>
+                        <div style={{padding: '0 16px 16px 16px'}}>
+                            <Typography style={{ padding: '0 0 5px 0' }} variant="h5">{user.result.name}</Typography>
+                            <Typography variant="body2" color="textPrimary" component="p">Insert here the current working position.</Typography>
+                            <Typography variant="body2" color="textPrimary" component="p">Insert here the city you live in.</Typography>
+                        </div>
+                    </div>
+                </Card>
+            </Grow>    
+
+            
+                <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="Edit Profile Details" >
+                    <div className={(!isMobile && `${classes.mainModalSpacing}`)}>
+                        <Typography variant="h5" component="h1" align="center" >
+                            Please enter your Profile {isProfile ? 'Picture' : 'Background Picture'}
+                            <div className={`${classes.fileInput}`}> <FileBase type="file" multiple={false} onDone={({base64}) => currentFile = base64 } /> </div>
+                        </Typography>
+                        <Button onClick={updatePicture} size="medium" variant="contained" color="primary">
+                                Update Picture
+                        </Button>
+                    </div>
+                </Modal>
+          
+
+            <Grow in>
+                <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
+                    <div className={classes.overlay5}> 
+                        <Button style={{color: '#4C4C4C'}} size="small"> <ClearIcon fontSize="default" /> </Button> 
+                    </div>
+                    <div className={classes.overlay4}>
+                        <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowFormSkills(!showFormSkills)}> <AddIcon fontSize="default" /> </Button> 
+                    </div>
+                    <div style={{padding: '16px 16px 16px 16px'}}>
+                        <CardContent>
+                            <Typography variant="h5">Skills</Typography>
+                        </CardContent>
+
+                        
+                        <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
+
+
+                            {showFormSkills ? <Grid containter className={classes.gridContainer}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
+                                </Grid>
+                                <Grid item xs={12} sm={2} className={(!isMobile) && `${classes.marginLeft}`}>
+                                    <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
+                                </Grid>
+                                <Button type="submit" size="large" variant="contained" color="primary" className={(!isMobile) && `${classes.marginLeft}`}>
+                                    <DoneIcon fontSize="default" />
+                                </Button>
+                            </Grid> : null}
+
+
+                            <div>
+                                {( !profileDetails ) ? <Typography className={classes.marginLeft}>Insert here your skills</Typography> : 
+                                    <Grid> 
+                                        {profileDetails.skills != initialStateProfileData.skill ?
+                                            profileDetails.skills.map((skill, index) => (
+                                                <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill}/>
+                                            )) : <Typography className={classes.marginLeft}>Insert here your skills</Typography> }
+                                    </Grid>
+                                }
+                            </div>
+                            
+                        </form>
+                    </div>
+                </Card>
+            </Grow>
+        </>
     );
 };
 

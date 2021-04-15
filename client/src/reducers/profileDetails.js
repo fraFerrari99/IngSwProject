@@ -13,8 +13,11 @@ export default (state = { profileDetails: null }, action) => {
             //state.profileDetails = action.payload;
             localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
             console.log('action.data(get): ' + action.payload);
+            window.dispatchEvent(new Event("storage"));
             return { ...state, profileDetails: action.payload };
         case PD_CREATE:
+            localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));
+            window.dispatchEvent(new Event("storage"));
             return [ ... state, action.payload];
         default:
             return state;
