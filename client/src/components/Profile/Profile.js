@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
@@ -8,6 +8,12 @@ import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import AddIcon from '@material-ui/icons/Add';
 import Modal from 'react-modal';
 import FileBase from 'react-file-base64';
+import { useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import useStyles from './styles';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
@@ -26,6 +32,7 @@ const Profile = ({user}) => {
     const [isProfile, setIsProfile] = useState(false);
     const [showFormSkills, setShowFormSkills] = useState(false);
     const [modalIsOpen,setIsOpen] = React.useState(false);
+    const history = useHistory();
     
     const [profileDetails, setProfileDetails] = useState(null);     //profileData client side
     var userId = null;
@@ -34,7 +41,8 @@ const Profile = ({user}) => {
     
     const [_skill, setSkill] = useState(initialStateSkill);  //keeps track of desc and level until handleSubmit, then inserted into skill
     const [profileData, setProfileData] = useState(initialStateProfileData);    //profileData to update server-side
-
+    const [open, setOpen] = React.useState(false);  //reset profile modal
+    const [showDeleteIcon, setShowDeleteIcon] = React.useState(false);
 
     //update localstorage
     const eventListenerFun = e => {
@@ -45,6 +53,15 @@ const Profile = ({user}) => {
     
         return () => window.removeEventListener("storage", eventListenerFun);
       }, []);
+
+    //roba per reset profilo
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     //roba per modal
     function openModal() {
@@ -191,7 +208,7 @@ const Profile = ({user}) => {
             <Grow in>
                 <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
                     <div className={classes.overlay5}> 
-                        <Button style={{color: '#4C4C4C'}} size="small"> <ClearIcon fontSize="default" /> </Button> 
+                        <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowDeleteIcon(!showDeleteIcon)}> <ClearIcon fontSize="default" /> </Button> 
                     </div>
                     <div className={classes.overlay4}>
                         <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowFormSkills(!showFormSkills)}> <AddIcon fontSize="default" /> </Button> 
@@ -204,26 +221,29 @@ const Profile = ({user}) => {
                         
                         <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
 
-
-                            {showFormSkills ? <Grid containter className={classes.gridContainer}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
-                                </Grid>
-                                <Grid item xs={12} sm={2} className={(!isMobile) && `${classes.marginLeft}`}>
-                                    <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
-                                </Grid>
-                                <Button type="submit" size="large" variant="contained" color="primary" className={(!isMobile) && `${classes.marginLeft}`}>
-                                    <DoneIcon fontSize="default" />
-                                </Button>
-                            </Grid> : null}
+                            {showFormSkills && 
+                                <Grow in>
+                                    <Grid containter className={classes.gridContainer}>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
+                                        </Grid>
+                                        <Grid item xs={12} sm={2} className={(!isMobile) && `${classes.marginLeft}`}>
+                                            <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
+                                        </Grid>
+                                        <Button type="submit" size="large" variant="contained" color="primary" className={(!isMobile) && `${classes.marginLeft}`}>
+                                            <DoneIcon fontSize="default" />
+                                        </Button>
+                                    </Grid> 
+                                </Grow>
+                            }
 
 
                             <div>
                                 {( !profileDetails ) ? <Typography className={classes.marginLeft}>Insert here your skills</Typography> : 
-                                    <Grid> 
+                                    <Grid>
                                         {profileDetails.skills != initialStateProfileData.skill ?
                                             profileDetails.skills.map((skill, index) => (
-                                                <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill}/>
+                                                <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill} showDeleteIcon={showDeleteIcon} userId={userId}/>
                                             )) : <Typography className={classes.marginLeft}>Insert here your skills</Typography> }
                                     </Grid>
                                 }
@@ -233,6 +253,45 @@ const Profile = ({user}) => {
                     </div>
                 </Card>
             </Grow>
+
+            {profileDetails &&
+                <>
+                    <Grow in>
+                        <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
+                            <Button onClick={handleClickOpen} size="large" variant="contained" color="secondary">
+                                RESET PROFILE
+                            </Button>
+                        </Card>
+                    </Grow>
+
+                    <div>
+                        <Dialog
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Reset your Profile"}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Do you want to reset your profile?
+                                </DialogContentText>
+                                <DialogContentText id="alert-dialog-description">
+                                    Attention! this action cannot be undone!
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose} color="primary">
+                                    Exit
+                                </Button>
+                                <Button onClick={() => dispatch(deleteProfileDetails(userId, history))} color="primary" autoFocus>
+                                    Reset My Profile
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </div>
+                </>
+            }
         </>
     );
 };

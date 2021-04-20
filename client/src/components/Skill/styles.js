@@ -6,5 +6,9 @@ export default makeStyles((theme) => ({
         },
     base: {
         padding: '16px 16px 16px 16px',
+    },
+    clearIcon: {
+        marginTop: '13px',
+        color: '#E74C3C',
     }
 }));

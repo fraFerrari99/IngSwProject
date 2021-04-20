@@ -23,3 +23,4 @@ export const fetchProfileDetails = (id) => API.get(`/profile/profileDetails/${id
 export const createProfileDetails = (newProfileDetails) => API.post('/profile/profileDetails', newProfileDetails);
 export const deleteProfileDetails = (id) => API.delete(`/profile/profileDetails/${id}`);
 export const updateProfileDetails = (id, updatedProfileDetails) => API.patch(`/profile/profileDetails/${id}`, updatedProfileDetails);
+export const deleteSkillInProfileDetails = (id, index) => API.post(`/profile/profileDetails/skill/${id}`, index);

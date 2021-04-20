@@ -92,9 +92,42 @@ export const updateProfileDetails = async ( req, res ) => {
 export const deleteProfileDetails = async ( req, res ) => {
     const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No Profile Details with that id');
+    var _ProfileDetails = await ProfileDetails.findOne({ owner: id });
 
-    await ProfileDetails.findByIdAndRemove(id);
+    if(!_ProfileDetails) return res.status(404).send('User has no profile details, cannot reset profile!');
+
+    await ProfileDetails.findByIdAndRemove(_ProfileDetails._id);
 
     res.json({ message: 'Profile Details deleted succesfully' });
+};
+
+export const deleteSkill = async ( req, res ) => {
+    //owner id in req.params, index in req.body specifies skill that needs to be deleted
+
+    const { id } = req.params;
+
+    const {index} = req.body;
+
+    //console.log('index ricevuto: ', index);
+
+    var _ProfileDetails = await ProfileDetails.findOne({ owner: id });
+
+    if(!_ProfileDetails) return res.status(404).send('User has no profile details, cannot delete skill!');
+
+    const _id = _ProfileDetails._id;
+
+    if(index<0 || index>_ProfileDetails.skills.length) return res.status(404).send('Wrong index number!');
+
+    //console.log('before remove: ' + _ProfileDetails.skills);
+
+    _ProfileDetails.skills.splice(index, 1);
+
+    //console.log('after remove: ' + _ProfileDetails.skills);
+
+    const updatedProfileDetails = await ProfileDetails.findByIdAndUpdate(_id, { ..._ProfileDetails }, { new: true });
+
+    res.json(updatedProfileDetails);
+
+    return;
+    
 };

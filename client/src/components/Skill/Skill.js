@@ -1,20 +1,44 @@
 import React from 'react';
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
+import { Grow, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
+import ClearIcon from '@material-ui/icons/Clear';
+import { useDispatch } from 'react-redux';
 
 import useStyles from './styles';
 
-const Skill = ({ index, arrayLength, skill  }) => {
+import { deleteSkill } from '../../actions/profileDetails';
 
+const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId }) => {
+    const dispatch = useDispatch();
     const classes = useStyles();
 
     const res = skill.split('$');
     const description = res[0];
     const experience = res[1];
 
+    const deleteSkillFunction = (e) => {
+        e.preventDefault();
+        
+        dispatch(deleteSkill( userId, {index: index} ));
+    }
+
     return (
-    <div>
-        <Typography className={`${classes.base} ` + (index<arrayLength-1 && `${classes.borderBottom}`)} >{description}:{experience}</Typography>
-    </div>
+        <div>
+            <Grid container className={index<arrayLength-1 && `${classes.borderBottom}`}>
+                <Grid item xs={8} sm={8}>
+                    <Typography className={classes.base} >{description}</Typography>
+                </Grid>
+                <Grid item xs={2} sm={2}>
+                    <Typography className={classes.base} >{experience}</Typography>
+                </Grid>
+                {showDeleteIcon &&
+                    <Grow in>
+                        <Grid item xs={2} sm={2}>
+                            <Button className={classes.clearIcon} size="small" onClick={deleteSkillFunction}> <ClearIcon fontSize="default" /> </Button> 
+                        </Grid>
+                    </Grow>
+                }
+            </Grid>
+        </div>
     );
 };
 

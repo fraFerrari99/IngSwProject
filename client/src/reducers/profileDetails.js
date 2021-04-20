@@ -3,6 +3,8 @@ import { PD_FETCH_ALL, PD_CREATE, PD_DELETE, PD_UPDATE } from '../constants/acti
 export default (state = { profileDetails: null }, action) => {
     switch (action.type) {
         case PD_DELETE:
+            localStorage.removeItem('profileDetails');
+            window.dispatchEvent(new Event("storage"));
             return action.payload;
         case PD_UPDATE:
             localStorage.setItem('profileDetails', JSON.stringify({ ...action.payload }));

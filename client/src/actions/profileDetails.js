@@ -43,13 +43,30 @@ export const updateProfileDetails = (id, profileDetails) => async (dispatch) => 
     }
 }
 
-export const deleteProfileDetails = (id) => async (dispatch) => {
+export const deleteProfileDetails = (id, history) => async (dispatch) => {
     try {
         await api.deleteProfileDetails(id);
 
         dispatch({ type: PD_DELETE, payload: id});
+
+        history.push('/profile');
     } catch (error) {
         console.log(error);
     }
 }
 
+export const deleteSkill = (id, index) => async (dispatch) => {
+    try {
+
+        //console.log('index ricevuto(actions): ' + index);
+
+        const { data } = await api.deleteSkillInProfileDetails(id, index);
+
+        console.log('data sent(update) :' + data);
+
+        dispatch({ type: PD_UPDATE, payload: data});
+
+    } catch (error) {
+        console.log(error);
+    }
+}
