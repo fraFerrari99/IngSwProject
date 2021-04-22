@@ -19,6 +19,7 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [modalIsOpen,setIsOpen] = React.useState(false);
+    const [userVote, setUserVote] = React.useState(73);
     const user = JSON.parse(localStorage.getItem('profile'));
 
     //functions used to open/close modal overlay
@@ -80,12 +81,21 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
                     {jobOffer.RAL} €/year
                 </Typography>
             )}
+
           </CardContent>
           <CardActions >
               <Button size="small" color="primary" onClick={openModal} > <AddIcon  fontSize="small"/> View </Button>
               
               <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="JobOffer Details" >
-                <div className={(!isMobile && `${classes.mainModalSpacing}`)}>
+
+                <div className={classes.action}>
+                  <Typography variant="h6" className={`${classes.overlay1} ${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
+                  <div className={classes.overlay2}>
+                    <Button color="primary" size="small" onClick={null}> <AddIcon fontSize="default" /> Apply </Button>
+                  </div>
+                </div>
+                
+                <div className={(!isMobile ? `${classes.mainModalSpacing}` : undefined)}>
                   <div className={classes.borderBottom}>
                     <Typography variant="h5" component="h1" >
                       {jobOffer.title}

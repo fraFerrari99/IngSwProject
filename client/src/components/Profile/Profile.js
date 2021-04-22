@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow } from '@material-ui/core';
+import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow, DialogContent, Collapse, IconButton } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -11,9 +11,16 @@ import FileBase from 'react-file-base64';
 import { useHistory } from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { withStyles } from '@material-ui/styles';
+import Alert from '@material-ui/lab/Alert';
+import CloseIcon from '@material-ui/icons/Close';
 
 import useStyles from './styles';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
@@ -31,7 +38,6 @@ const Profile = ({user}) => {
     const classes = useStyles();
     const [isProfile, setIsProfile] = useState(false);
     const [showFormSkills, setShowFormSkills] = useState(false);
-    const [modalIsOpen,setIsOpen] = React.useState(false);
     const history = useHistory();
     
     const [profileDetails, setProfileDetails] = useState(null);     //profileData client side
@@ -41,53 +47,23 @@ const Profile = ({user}) => {
     
     const [_skill, setSkill] = useState(initialStateSkill);  //keeps track of desc and level until handleSubmit, then inserted into skill
     const [profileData, setProfileData] = useState(initialStateProfileData);    //profileData to update server-side
-    const [open, setOpen] = React.useState(false);  //reset profile modal
+    const [openReset, setOpenReset] = React.useState(false);    //reset profile dialog
+    const [openPicture, setOpenPicture] = React.useState(false);    //change profile picture dialog
+    const [openAlertText, setOpenAlertText] = React.useState(false);    //alert if skills fields are invalid 
     const [showDeleteIcon, setShowDeleteIcon] = React.useState(false);
+
+    const [errorSkill, setErrorSkill] = React.useState('format');
 
     //update localstorage
     const eventListenerFun = e => {
         setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
     };
+
     useEffect(() => {
         window.addEventListener("storage", eventListenerFun);
     
         return () => window.removeEventListener("storage", eventListenerFun);
       }, []);
-
-    //roba per reset profilo
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    //roba per modal
-    function openModal() {
-          setIsOpen(true);
-        }
-    function afterOpenModal() {
-        // references are now sync'd and can be accessed.
-        //subtitle.style.color = '#f00';
-    }
-    function closeModal(){
-        setIsOpen(false);
-    }
-    //modal style
-    const customStyles = {
-        content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : '30%',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)',
-        }, 
-        overlay: {
-        background: 'rgba(0,0,0, 0.5)',
-        },
-    };
     
     const handleChange = (e) => {
         setSkill({ ..._skill, [e.target.name]: e.target.value });
@@ -97,12 +73,11 @@ const Profile = ({user}) => {
     //isProfile == true => editare foto profilo, isProfile == false => editare foto background
     function openModalOpt1() {
         setIsProfile(false);
-        openModal();
+        setOpenPicture(true);
     }
-
     function openModalOpt2() {
         setIsProfile(true);
-        openModal();
+        setOpenPicture(true);
     }
 
     useEffect(() => {
@@ -111,6 +86,20 @@ const Profile = ({user}) => {
     
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if(_skill.description == ''){
+            setErrorSkill('Empty Description');
+            setOpenAlertText(true);
+            return;
+        } else if(_skill.description.indexOf('$') != -1){
+            setErrorSkill('Invalid Character in Description');
+            setOpenAlertText(true);
+            return;
+        } else if(_skill.level == ''){
+            setErrorSkill('Empty Level');
+            setOpenAlertText(true);
+            return;
+        } else setOpenAlertText(false);
         
         try {
             if(!profileDetails)
@@ -130,8 +119,17 @@ const Profile = ({user}) => {
     const clear = () => {
         setSkill(initialStateSkill);
         document.getElementById('idDescription').value = '';
-        document.getElementById('idLevel').value = '';
+        _skill.level = "";
     }
+
+    const HtmlTooltip = withStyles((theme) => ({
+        tooltip: {
+          backgroundColor: '#f5f5f9',
+          color: 'rgba(0, 0, 0, 0.87)',
+          maxWidth: 220,
+          border: '1px solid #dadde9',
+        },
+      }))(Tooltip);
 
     const updatePicture = () => {
         if(profileDetails){
@@ -142,7 +140,7 @@ const Profile = ({user}) => {
             dispatch(createProfileDetails({...profileData, backgroundPicture: currentFile }));    
         }
 
-        closeModal();
+        setOpenPicture(false);
     }
 
     //controlla se il dispositivo è mobile
@@ -159,7 +157,7 @@ const Profile = ({user}) => {
         return (
             <Grid item xs={12} sm={12}>
                 <Paper className={classes.paper}>
-                    <Typography variant="h6" align="center">
+                    <Typography component="p" variant="h6" align="center">
                         Please Sign In to view your Profile.
                     </Typography>
                 </Paper>
@@ -191,27 +189,37 @@ const Profile = ({user}) => {
                 </Card>
             </Grow>    
 
-            
-                <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="Edit Profile Details" >
-                    <div className={(!isMobile && `${classes.mainModalSpacing}`)}>
-                        <Typography variant="h5" component="h1" align="center" >
-                            Please enter your Profile {isProfile ? 'Picture' : 'Background Picture'}
-                            <div className={`${classes.fileInput}`}> <FileBase type="file" multiple={false} onDone={({base64}) => currentFile = base64 } /> </div>
-                        </Typography>
-                        <Button onClick={updatePicture} size="medium" variant="contained" color="primary">
+                {/*profile picture edit dialog*/}
+                <div>
+                    <Dialog open={openPicture} onClose={() => setOpenPicture(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" >
+                        <DialogTitle id="alert-dialog-title">Please enter your Profile {isProfile ? 'Picture' : 'Background Picture'}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                <div className={`${classes.fileInput}`}> <FileBase type="file" multiple={false} onDone={({ base64 }) => currentFile = base64} /> </div>
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpenPicture(false)} color="secondary">
+                                Exit
+                            </Button>
+                            <Button onClick={updatePicture} size="medium" color="primary">
                                 Update Picture
-                        </Button>
-                    </div>
-                </Modal>
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
           
-
             <Grow in>
                 <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
                     <div className={classes.overlay5}> 
-                        <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowDeleteIcon(!showDeleteIcon)}> <ClearIcon fontSize="default" /> </Button> 
+                        <Tooltip title="remove one or more skills" placement="left" arrow>
+                            <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowDeleteIcon(!showDeleteIcon)}> <ClearIcon fontSize="default" /> </Button> 
+                        </Tooltip>
                     </div>
                     <div className={classes.overlay4}>
-                        <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowFormSkills(!showFormSkills)}> <AddIcon fontSize="default" /> </Button> 
+                        <Tooltip title="add or modify existing skill" placement="left" arrow>
+                            <Button style={{color: '#4C4C4C'}} size="small" onClick={() => setShowFormSkills(!showFormSkills)}> <AddIcon fontSize="default" /> </Button> 
+                        </Tooltip>
                     </div>
                     <div style={{padding: '16px 16px 16px 16px'}}>
                         <CardContent>
@@ -220,31 +228,56 @@ const Profile = ({user}) => {
 
                         
                         <form autoComplete="off" noValidate style={{marginRight: '50px'}} onSubmit={handleSubmit}>
-
+                            {/*add or modify existing skills*/}
                             {showFormSkills && 
+                            <>
                                 <Grow in>
-                                    <Grid containter className={classes.gridContainer}>
+                                    <Grid container className={classes.gridContainer}>
                                         <Grid item xs={12} sm={6}>
                                             <TextField id="idDescription" name="description" onChange={handleChange} variant="outlined" required fullWidth label={"description"}/>
                                         </Grid>
-                                        <Grid item xs={12} sm={2} className={(!isMobile) && `${classes.marginLeft}`}>
-                                            <TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
-                                        </Grid>
+                                        <HtmlTooltip placement="top" arrow
+                                            title={
+                                                <React.Fragment>
+                                                    <Typography color="inherit">Levels of Experience</Typography>
+                                                    <Typography display="inline">C </Typography> <em>{"0-2 years of experience"}</em><br />
+                                                    <Typography display="inline" >B </Typography><em>{"2-5 years of experience"}</em><br />
+                                                    <Typography display="inline">A </Typography><em>{"5+ years of experience"}</em><br />
+                                                </React.Fragment>
+                                            }
+                                        >
+                                            <Grid item xs={12} sm={2} className={(!isMobile) ? `${classes.marginLeft}` : ''}>
+                                                <FormControl  fullWidth variant="outlined" className={classes.formControl}>
+                                                    <InputLabel id="demo-simple-select-outlined-label">level</InputLabel>
+                                                    <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" onChange={handleChange} name="level" label="level" required defaultValue="" value={_skill.level} >
+                                                        <MenuItem name='A' value={'A'}>A</MenuItem>
+                                                        <MenuItem name='B' value={'B'}>B</MenuItem>
+                                                        <MenuItem name='C' value={'C'}>C</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </Grid>
+                                        </HtmlTooltip>
                                         <Button type="submit" size="large" variant="contained" color="primary" className={(!isMobile) && `${classes.marginLeft}`}>
                                             <DoneIcon fontSize="default" />
                                         </Button>
                                     </Grid> 
                                 </Grow>
+
+                                <Collapse in={openAlertText} style={{margin: '10px'}}>
+                                    <Alert severity="error" action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setOpenAlertText(false); }} > <CloseIcon fontSize="inherit" /> </IconButton> } >
+                                        Error! {errorSkill}
+                                    </Alert>
+                                </Collapse>
+                            </>
                             }
 
-
                             <div>
-                                {( !profileDetails ) ? <Typography className={classes.marginLeft}>Insert here your skills</Typography> : 
+                                {( !profileDetails ) ? <Typography component="p" className={classes.marginLeft}>Insert here your skills</Typography> : 
                                     <Grid>
                                         {profileDetails.skills != initialStateProfileData.skill ?
                                             profileDetails.skills.map((skill, index) => (
                                                 <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill} showDeleteIcon={showDeleteIcon} userId={userId}/>
-                                            )) : <Typography className={classes.marginLeft}>Insert here your skills</Typography> }
+                                            )) : <Typography component="p" className={classes.marginLeft}>Insert here your skills</Typography> }
                                     </Grid>
                                 }
                             </div>
@@ -254,23 +287,19 @@ const Profile = ({user}) => {
                 </Card>
             </Grow>
 
+            {/*profile reset footer*/}
             {profileDetails &&
                 <>
                     <Grow in>
                         <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-                            <Button onClick={handleClickOpen} size="large" variant="contained" color="secondary">
+                            <Button onClick={() => setOpenReset(true)} size="large" variant="contained" color="secondary">
                                 RESET PROFILE
                             </Button>
                         </Card>
                     </Grow>
 
                     <div>
-                        <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
+                        <Dialog open={openReset} onClose={() => setOpenReset(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" >
                             <DialogTitle id="alert-dialog-title">{"Reset your Profile"}</DialogTitle>
                             <DialogContent>
                                 <DialogContentText id="alert-dialog-description">
@@ -281,10 +310,10 @@ const Profile = ({user}) => {
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleClose} color="primary">
+                                <Button onClick={() => setOpenReset(false)} color="primary">
                                     Exit
                                 </Button>
-                                <Button onClick={() => dispatch(deleteProfileDetails(userId, history))} color="primary" autoFocus>
+                                <Button onClick={() => dispatch(deleteProfileDetails(userId, history))} color="secondary" autoFocus>
                                     Reset My Profile
                                 </Button>
                             </DialogActions>
@@ -292,8 +321,13 @@ const Profile = ({user}) => {
                     </div>
                 </>
             }
+
         </>
     );
 };
 
 export default Profile;
+
+/*
+<TextField id="idLevel" name="level" style={{flexDirection: 'column'}} onChange={handleChange} variant="outlined" required fullWidth label={"level"}/>
+*/

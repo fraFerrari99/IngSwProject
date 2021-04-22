@@ -54,5 +54,49 @@ export default makeStyles({
     marginLeft: '3%', 
     marginTop: '3%', 
     marginRight: '3%',
-  }
+    marginBottom: '3%',
+  },
+  action: {
+    position: 'absolute',
+    right:'10px',
+    top: '30px',
+    width: '100px',
+  },
+  overlay1: {
+    width: '40px',
+    height: '40px',
+    position: 'absolute',
+    marginLeft: '20px',
+    textAlign: 'center',
+    paddingTop: '15px',
+  },
+  overlay2: {
+    position: 'absolute',
+    marginTop: '45px',
+  },
+  redColor: {
+    color: '#f44336',
+    border: '2px solid #f44336',
+  },
+  yellowColor: {
+    color: '#ffc107',
+    border: '2px solid #ffc107',
+  },
+  greenColor: {
+    color: '#4caf50',
+    border: '2px solid #4caf50',
+  },
+  numberCircle: {
+    borderRadius: '50%',
+    width: '22.5px',
+    height: '22.5px',
+    padding: '8px',
+    cursor: 'pointer',
+
+    background: '#fff',
+    //color: '#666',
+    textAlign: 'center',
+
+    font: '20px Arial, sans-serif',
+}
 });
