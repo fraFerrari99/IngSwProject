@@ -44,3 +44,14 @@ export const updateJobOffer = (id, jobOffer) => async (dispatch) => {
         console.log(error);
     }
 }
+
+export const applyToJobOffer = (id, userId) => async (dispatch) => {
+    try {
+
+        const { data } = await api.applyToJobOffer(id, userId);
+
+        dispatch({ type: UPDATE, payload: data});
+    } catch (error) {
+        console.log(error);
+    }
+}

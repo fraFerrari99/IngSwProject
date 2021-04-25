@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getJobOffers, createJobOffer, deleteJobOffer, updateJobOffer } from '../controllers/jobOffers.js';     //in graffe siccome importiamo in base a nome e non default
+import { getJobOffers, createJobOffer, deleteJobOffer, updateJobOffer, applyToJobOffer } from '../controllers/jobOffers.js';     //in graffe siccome importiamo in base a nome e non default
 
 import auth from '../middleware/auth.js';   //.js because its backend
 const router = express.Router();
@@ -11,5 +11,6 @@ router.get('/', getJobOffers);
 router.post('/', auth, createJobOffer);
 router.patch('/:id', auth,  updateJobOffer);
 router.delete('/:id', auth, deleteJobOffer);
+router.post('/apply/:id', auth, applyToJobOffer);
 
 export default router;

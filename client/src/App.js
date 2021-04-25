@@ -9,13 +9,14 @@ import PostJobOffer from './components/PostJobOffer/PostJobOffer';
 import useStyles from './styles';
 import Auth from './components/Auth/Auth';
 import Profile from './components/Profile/Profile';
-import { getProfileDetails } from './actions/profileDetails';
 
 const App = () => {
     const dispatch = useDispatch();
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
-    const [profileDetails, setProfileDetails] = useState(JSON.parse(localStorage.getItem('profileDetails')));
+    const [profileDetails, setProfileDetails] = useState(null);
+    var userId = null;
+    (user?.result?.googleId) ?  userId = user?.result?.googleId : userId = user?.result?._id;
 
     //used to pass JSX component to the children
     const _PostJobOffer = (props) => {
@@ -26,13 +27,13 @@ const App = () => {
 
     const _Home = (props) => {
         return (
-          <Home currentId={currentId} setCurrentId={setCurrentId} {...props} />
+          <Home currentId={currentId} setCurrentId={setCurrentId} profileDetails={profileDetails} {...props} />
         );
     }
 
     const _Profile = (props) => {
         return (
-          <Profile profileDetails={profileDetails} setProfileDetails={setProfileDetails} user={user} {...props} />
+          <Profile user={user} _setProfileDetails={setProfileDetails} {...props} />
         );
     }
 
@@ -43,6 +44,22 @@ const App = () => {
 
         setUser(JSON.parse(localStorage.getItem('profile')));
     }, [window.location]);
+/*
+    useEffect(() => {
+
+        dispatch(getProfileDetails( userId ));
+        setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
+    }, [userId]);
+
+    const eventListenerFun = e => {
+        setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
+    };
+
+    useEffect(() => {
+        window.addEventListener("storage", eventListenerFun);
+    
+        return () => window.removeEventListener("storage", eventListenerFun);
+      }, []);*/
 
     return (
     <BrowserRouter>

@@ -32,7 +32,7 @@ import { getProfileDetails, createProfileDetails, deleteProfileDetails, updatePr
 const initialStateSkill = { description: '', level: '' };
 const initialStateProfileData = { skill: '', profilePicture: null, backgroundPicture: null }
 
-const Profile = ({user}) => {
+const Profile = ({user, _setProfileDetails}) => {
     Modal.setAppElement('#root');
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -57,6 +57,8 @@ const Profile = ({user}) => {
     //update localstorage
     const eventListenerFun = e => {
         setProfileDetails(JSON.parse(localStorage.getItem('profileDetails')));
+        console.log('doverere dopo!');
+        _setProfileDetails(profileDetails);     //aggiorno i dettagli del profilo al resto dell'app
     };
 
     useEffect(() => {
@@ -64,6 +66,7 @@ const Profile = ({user}) => {
     
         return () => window.removeEventListener("storage", eventListenerFun);
       }, []);
+
     
     const handleChange = (e) => {
         setSkill({ ..._skill, [e.target.name]: e.target.value });

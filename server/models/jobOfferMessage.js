@@ -14,7 +14,8 @@ const jobOfferSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         default: new Date()
-    }
+    },
+    appliances: [String],   //array of appliences
 });     
 
 const JobOffer = mongoose.model('JobOffer', jobOfferSchema);

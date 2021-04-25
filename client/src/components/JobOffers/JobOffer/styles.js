@@ -60,19 +60,22 @@ export default makeStyles({
     position: 'absolute',
     right:'10px',
     top: '30px',
-    width: '100px',
+    width: '300px',
   },
   overlay1: {
     width: '40px',
     height: '40px',
     position: 'absolute',
-    marginLeft: '20px',
+    right: '75px',
     textAlign: 'center',
     paddingTop: '15px',
   },
   overlay2: {
     position: 'absolute',
     marginTop: '45px',
+    width: 'auto',
+    right: '60px',
+    whiteSpace: 'nowrap',
   },
   redColor: {
     color: '#f44336',
@@ -98,5 +101,10 @@ export default makeStyles({
     textAlign: 'center',
 
     font: '20px Arial, sans-serif',
-}
+  },
+  textIcon: {
+    verticalAlign: 'middle',
+    display: 'inline-flex'
+  }
+
 });

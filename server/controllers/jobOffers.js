@@ -47,3 +47,28 @@ export const updateJobOffer = async ( req, res ) => {
 
     res.json(updatedJobOffer);
 };
+
+export const applyToJobOffer = async ( req, res ) => {
+    const { id: _id } = req.params;     //rinominato
+    const {userId} = req.body;
+
+    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('No post with that id');
+
+    var _jobOffer = await JobOfferMessage.findById(_id);
+
+    if(!_jobOffer) return res.status(404).send('No jobOffer found!');
+
+    const index = _jobOffer.appliances.findIndex((id) => id == userId);
+
+    if(index === -1) {
+        //like the post
+        _jobOffer.appliances.push(userId);
+    } else {
+        //un-like the post
+        _jobOffer.appliances = _jobOffer.appliances.filter((id) => id != userId);
+    }
+
+    const updatedJobOffer = await JobOfferMessage.findByIdAndUpdate(_id, { ..._jobOffer }, { new: true });
+
+    res.json(updatedJobOffer);
+};

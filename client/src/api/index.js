@@ -15,6 +15,7 @@ export const fetchJobOffers = () => API.get('/jobOffers');
 export const createJobOffer = (newJobOffer) => API.post('/jobOffers', newJobOffer);
 export const deleteJobOffer = (id) => API.delete(`/jobOffers/${id}`);
 export const updateJobOffer = (id, updatedJobOffer) => API.patch(`/jobOffers/${id}`, updatedJobOffer);
+export const applyToJobOffer = (id, userId) => API.post(`/jobOffers/apply/${id}`, userId);
 
 export const signIn = (formData) => API.post('/user/signin', formData);
 export const signUp = (formData) => API.post('/user/signup', formData);
