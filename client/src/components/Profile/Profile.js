@@ -155,6 +155,40 @@ const Profile = ({user, _setProfileDetails}) => {
 
     var isMobile = window.mobileCheck();
 
+    const ResetProfileBlock = () => {
+        return <>
+        <Grow in>
+            <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
+                <Button onClick={() => setOpenReset(true)} size="large" variant="contained" color="secondary">
+                    RESET PROFILE
+                </Button>
+            </Card>
+        </Grow>
+
+        <div>
+            <Dialog open={openReset} onClose={() => setOpenReset(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" >
+                <DialogTitle id="alert-dialog-title">{"Reset your Profile"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Do you want to reset your profile?
+                    </DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        Attention! this action cannot be undone!
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenReset(false)} color="primary">
+                        Exit
+                    </Button>
+                    <Button onClick={() => dispatch(deleteProfileDetails(userId, history))} color="secondary" autoFocus>
+                        Reset My Profile
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    </>
+    };
+
     //if user not logged in
     if (!user?.result?.name) {
         return (
@@ -292,37 +326,7 @@ const Profile = ({user, _setProfileDetails}) => {
 
             {/*profile reset footer*/}
             {profileDetails &&
-                <>
-                    <Grow in>
-                        <Card style={{marginTop: '15px'}} className={`${classes.card} ` + (!isMobile && `${classes.cardMarginRight}`)}>
-                            <Button onClick={() => setOpenReset(true)} size="large" variant="contained" color="secondary">
-                                RESET PROFILE
-                            </Button>
-                        </Card>
-                    </Grow>
-
-                    <div>
-                        <Dialog open={openReset} onClose={() => setOpenReset(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" >
-                            <DialogTitle id="alert-dialog-title">{"Reset your Profile"}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-                                    Do you want to reset your profile?
-                                </DialogContentText>
-                                <DialogContentText id="alert-dialog-description">
-                                    Attention! this action cannot be undone!
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={() => setOpenReset(false)} color="primary">
-                                    Exit
-                                </Button>
-                                <Button onClick={() => dispatch(deleteProfileDetails(userId, history))} color="secondary" autoFocus>
-                                    Reset My Profile
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
-                    </div>
-                </>
+                <ResetProfileBlock />
             }
 
         </>

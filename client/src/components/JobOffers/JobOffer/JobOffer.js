@@ -1,12 +1,18 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Card, CardActions, CardContent, Button, Typography } from '@material-ui/core';
+import { Card, CardActions, CardContent, Button, Typography, DialogContent } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import Candidate from '../../Candidate/Candidate';
 
 import { deleteJobOffer, applyToJobOffer } from '../../../actions/jobOffers';
 
@@ -20,7 +26,7 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
     const dispatch = useDispatch();
     const [modalIsOpen,setIsOpen] = React.useState(false);
     const [userVote, setUserVote] = React.useState(calculateScore);
-    const [applianceModal, setApplianceModa] = React.useState(false);
+    const [applianceModal, setApplianceModal] = React.useState(false);
     const user = JSON.parse(localStorage.getItem('profile'));
     const userId =  user?.result?.googleId || user?.result?._id;
 
@@ -110,7 +116,6 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
               <Button size="small" color="primary" onClick={openModal} > <AddIcon  fontSize="small"/> View </Button>
               
               <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="JobOffer Details" >
-
                 {!isMobile &&
                   <div className={classes.action}>
                     <Typography variant="h6" className={`${classes.overlay1} ${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
@@ -156,16 +161,30 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
                     </div>
                   </div>
                 }
-
                 </div> 
               </Modal>
+
+              <div>
+                <Dialog open={applianceModal} onClose={() => setApplianceModal(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" >
+                    <DialogTitle id="alert-dialog-title">Candidates</DialogTitle>
+                    <div style={{margin: '20px'}}>
+                      { jobOffer.appliances  &&
+                        jobOffer.appliances.map((candidate) => (
+                          <DialogContentText id="alert-dialog-description">
+                            <Candidate userId={candidate} score={87} />
+                          </DialogContentText>
+                        )) 
+                      }
+                    </div>
+                </Dialog>
+              </div>
 
             {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && (
               <Button size="small" color="primary" component={Link} to="/postJobOffer" onClick={() => setCurrentId(jobOffer._id)} > 
                 <EditIcon  fontSize="small"/>  Edit </Button>
             )}
             {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) && (
-              <Button className={classes.deleteButton} size="small" color="primary" onClick={null}> Appliances </Button>
+              <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
             )}
             {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator ) && (
               <Button className={classes.deleteButton} size="small" color="secondary" onClick={() => dispatch(deleteJobOffer(jobOffer._id))}>

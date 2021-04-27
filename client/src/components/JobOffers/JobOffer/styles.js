@@ -77,6 +77,10 @@ export default makeStyles({
     right: '60px',
     whiteSpace: 'nowrap',
   },
+  textIcon: {
+    verticalAlign: 'middle',
+    display: 'inline-flex'
+  },
   redColor: {
     color: '#f44336',
     border: '2px solid #f44336',
@@ -102,9 +106,5 @@ export default makeStyles({
 
     font: '20px Arial, sans-serif',
   },
-  textIcon: {
-    verticalAlign: 'middle',
-    display: 'inline-flex'
-  }
 
 });

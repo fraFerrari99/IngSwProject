@@ -1,4 +1,4 @@
-import { AUTH, LOGOUT } from '../constants/actionTypes.js';
+import { AUTH, LOGOUT, GETNAME } from '../constants/actionTypes.js';
 
 const authReducer = (state = { authData: null }, action) => {
     switch (action.type) {

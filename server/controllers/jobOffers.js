@@ -61,10 +61,10 @@ export const applyToJobOffer = async ( req, res ) => {
     const index = _jobOffer.appliances.findIndex((id) => id == userId);
 
     if(index === -1) {
-        //like the post
+        //apply to current jobOffer
         _jobOffer.appliances.push(userId);
     } else {
-        //un-like the post
+        //un-apply to current jobOffer
         _jobOffer.appliances = _jobOffer.appliances.filter((id) => id != userId);
     }
 
