@@ -10,7 +10,6 @@ const jobOfferSchema = mongoose.Schema({
     requirements: [String],
     logo: String,        //we will convert an image into a string using base64
     RAL: String,
-    selectedFile: String,
     createdAt: {
         type: Date,
         default: new Date()

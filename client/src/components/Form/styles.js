@@ -9,7 +9,7 @@ export default makeStyles((theme) => ({
   mainContainer: {
     marginLeft: '25%',
   },
-  form: {
+  center: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
@@ -25,6 +25,7 @@ export default makeStyles((theme) => ({
     '&:hover': {
       background: '#6495ED',
     },
+    marginTop: '5px',
     marginLeft: '2px', 
     marginRight: '2px',
   },
@@ -45,5 +46,24 @@ export default makeStyles((theme) => ({
   footerMargin: {
     marginLeft: '5px',
     marginRight: '5px',
-  }
+  },
+  gridContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  item: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  doneButton: {
+    padding: '0px 0px 0px 0px',
+    height: '58px',
+    width: '44px',
+    margin: '10px 0 0 10px',
+  },
+  mainGrid: {
+    verticalAlign: 'middle',
+    display: 'inline-flex'
+},
 }));

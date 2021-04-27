@@ -7,7 +7,7 @@ import useStyles from './styles';
 
 import { deleteSkill } from '../../actions/profileDetails';
 
-const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId }) => {
+const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId, profileCalling, skillArray }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -19,6 +19,12 @@ const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId }) => {
         e.preventDefault();
         
         dispatch(deleteSkill( userId, {index: index} ));
+    }
+
+    const deleteSkillFromArray = () => {
+        console.log('pre , ' + skillArray);
+        skillArray.splice(index, 1);
+        console.log('dopo , ' + skillArray);
     }
 
     return (
@@ -33,7 +39,7 @@ const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId }) => {
                 {showDeleteIcon &&
                     <Grow in>
                         <Grid item xs={2} sm={2}>
-                            <Button className={classes.clearIcon} size="small" onClick={deleteSkillFunction}> <ClearIcon fontSize="default" /> </Button> 
+                            <Button className={classes.clearIcon} size="small" onClick={profileCalling ? deleteSkillFunction : deleteSkillFromArray}> <ClearIcon fontSize="default" /> </Button> 
                         </Grid>
                     </Grow>
                 }

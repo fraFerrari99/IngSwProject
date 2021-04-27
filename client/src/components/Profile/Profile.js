@@ -313,7 +313,7 @@ const Profile = ({user, _setProfileDetails}) => {
                                     <Grid>
                                         {profileDetails.skills != initialStateProfileData.skill ?
                                             profileDetails.skills.map((skill, index) => (
-                                                <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill} showDeleteIcon={showDeleteIcon} userId={userId}/>
+                                                <Skill index={index} arrayLength={profileDetails.skills.length} skill={skill} showDeleteIcon={showDeleteIcon} userId={userId} profileCalling={true}/>
                                             )) : <Typography component="p" className={classes.marginLeft}>Insert here your skills</Typography> }
                                     </Grid>
                                 }
