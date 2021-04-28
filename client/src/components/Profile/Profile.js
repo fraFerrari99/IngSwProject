@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow, DialogContent, Collapse, IconButton } from '@material-ui/core';
+import { Card, TextField, CardContent, CardMedia, Button, Typography, Grid, Paper, Grow, DialogContent } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -19,8 +19,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { withStyles } from '@material-ui/styles';
-import Alert from '@material-ui/lab/Alert';
-import CloseIcon from '@material-ui/icons/Close';
 
 import useStyles from './styles';
 import dafaultProfilePicture from '../../images/defaultUserPicture.png';
@@ -28,6 +26,7 @@ import defaultBackground from '../../images/defaultBackground.PNG';
 import Skill from '../Skill/Skill';
 
 import { getProfileDetails, createProfileDetails, deleteProfileDetails, updateProfileDetails } from '../../actions/profileDetails';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 const initialStateSkill = { description: '', level: '' };
 const initialStateProfileData = { skill: '', profilePicture: null, backgroundPicture: null }
@@ -300,11 +299,8 @@ const Profile = ({user, _setProfileDetails}) => {
                                     </Grid> 
                                 </Grow>
 
-                                <Collapse in={openAlertText} style={{margin: '10px'}}>
-                                    <Alert severity="error" action={ <IconButton aria-label="close" color="inherit" size="small" onClick={() => { setOpenAlertText(false); }} > <CloseIcon fontSize="inherit" /> </IconButton> } >
-                                        Error! {errorSkill}
-                                    </Alert>
-                                </Collapse>
+                                <ErrorMessage text={errorSkill} showError={openAlertText} setShowError={setOpenAlertText} />
+                                
                             </>
                             }
 

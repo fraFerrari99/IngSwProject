@@ -7,7 +7,7 @@ import useStyles from './styles';
 
 import { deleteSkill } from '../../actions/profileDetails';
 
-const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId, profileCalling, skillArray }) => {
+const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId, profileCalling, skillArray, setRequirementsArray }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -22,9 +22,9 @@ const Skill = ({ index, arrayLength, skill, showDeleteIcon, userId, profileCalli
     }
 
     const deleteSkillFromArray = () => {
-        console.log('pre , ' + skillArray);
-        skillArray.splice(index, 1);
-        console.log('dopo , ' + skillArray);
+        console.log('pre rimoz , ' + skillArray);
+        setRequirementsArray(skillArray.filter(skill => skillArray.indexOf(skill) !== index));
+        console.log('dopo rimoz , ' + skillArray);
     }
 
     return (

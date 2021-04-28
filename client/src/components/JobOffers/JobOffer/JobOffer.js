@@ -120,10 +120,13 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
                   <div className={classes.action}>
                     <Typography variant="h6" className={`${classes.overlay1} ${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
 
-                    <div className={classes.overlay2}>
+                    <div className={classes.overlay2}>   
+                      {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) ? (
+                        <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
+                      ) : 
                       <Button color="primary" size="small" disabled={!user?.result} onClick={() => dispatch(applyToJobOffer(jobOffer._id, {userId: userId}))}> 
                         <Appliances />
-                      </Button>
+                      </Button> }
                     </div>
                   </div>
                 }
@@ -155,9 +158,12 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
                   <div>
                     <Typography variant="h6" className={`${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
                     <div>
+                    {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) ? (
+                        <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
+                      ) :
                       <Button color="primary" size="small" disabled={!user?.result} onClick={() => dispatch(applyToJobOffer(jobOffer._id, {userId: userId}))}> 
                         <Appliances />
-                      </Button>
+                      </Button> }
                     </div>
                   </div>
                 }
@@ -182,9 +188,6 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
             {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && (
               <Button size="small" color="primary" component={Link} to="/postJobOffer" onClick={() => setCurrentId(jobOffer._id)} > 
                 <EditIcon  fontSize="small"/>  Edit </Button>
-            )}
-            {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) && (
-              <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
             )}
             {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator ) && (
               <Button className={classes.deleteButton} size="small" color="secondary" onClick={() => dispatch(deleteJobOffer(jobOffer._id))}>
