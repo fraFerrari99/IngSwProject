@@ -102,11 +102,24 @@ const Form = ({ currentId, setCurrentId }) => {
             updatedArray[utilIndex] = util;
             setRequirementsArray(updatedArray);
         }
+        clearSkill();
+    }
+
+    const clearSkill = () => {
+        setSkill(initialStateSkill);
+        document.getElementById('idDescription').value = '';
+        _skill.level = "";
     }
 
     const clear = () => {
-        setCurrentId(null);
-        setJobOfferData({ company: '', title: '', description: '', requirements: '', RAL: '',  _skill: '' });
+        if(jobOffer) {
+            setJobOfferData(jobOffer);
+            setRequirementsArray(jobOffer?.requirements ? jobOffer.requirements : []);
+        }
+        else{
+            setCurrentId(null);
+            setJobOfferData({ company: '', title: '', description: '', requirements: '', RAL: '',  _skill: '' });
+        }
     }
 
     const HtmlTooltip = withStyles((theme) => ({
@@ -193,7 +206,7 @@ const Form = ({ currentId, setCurrentId }) => {
                     </div>
 
                     <Button className={`${classes.root} ${classes.buttonSubmit} ${classes.footerMargin}`} vatiant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
-                    <Button vatiant="contained" className={`${classes.buttonSecondary} ${classes.footerMargin}`} onClick={clear} fullWidth>Clear</Button>
+                    <Button vatiant="contained" className={`${classes.buttonSecondary} ${classes.footerMargin}`} onClick={clear} fullWidth>{jobOffer ? 'Undo' : 'Clear'}</Button>
                 
                 </form>
             </Paper>
