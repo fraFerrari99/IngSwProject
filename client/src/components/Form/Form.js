@@ -37,9 +37,6 @@ const Form = ({ currentId, setCurrentId }) => {
 
     useEffect(() => {
         if(jobOffer) setJobOfferData(jobOffer);
-        //if(jobOffer?.requirements) {
-            //console.log('ricevuto requirementsArray: ', requirementsArray);
-        //}
     }, [jobOffer]);
 
     const handleSubmit = (e) => {
@@ -92,7 +89,7 @@ const Form = ({ currentId, setCurrentId }) => {
         var util = _skill.description + '$' + _skill.level;
         var flag = false; var utilIndex;
         requirementsArray.map((element, index) => {
-            if(element.split('$',1).join() == _skill.description){       
+            if(element.split('$',1).join().toLowerCase() === _skill.description.toLowerCase()){       
                 flag = true; utilIndex = index; 
             }
         })

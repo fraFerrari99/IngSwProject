@@ -7,10 +7,11 @@ import JobOffer from './JobOffer/JobOffer';
 
 import useStyles from './styles';
 
-const JobOffers = ({ setCurrentId, currentId, profileDetails }) => {
+const JobOffers = ({ setCurrentId, currentId }) => {
     const classes = useStyles();
     const jobOffers = useSelector((state) => state.jobOffers);      //named after obj inside reducers/index.js
     const dispatch = useDispatch();
+    const profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
     
     useEffect(() => {
         dispatch(getJobOffers());

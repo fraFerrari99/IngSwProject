@@ -11,6 +11,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/styles';
 
 import Candidate from '../../Candidate/Candidate';
 
@@ -18,17 +20,16 @@ import { deleteJobOffer, applyToJobOffer } from '../../../actions/jobOffers';
 
 import useStyles from './styles';
 
-const JobOffer = ({ jobOffer, setCurrentId }) => {
+const JobOffer = ({ jobOffer, setCurrentId, profileDetails }) => {
     Modal.setAppElement('#root');
 
     const classes = useStyles();
-    const profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
     const dispatch = useDispatch();
     const [modalIsOpen,setIsOpen] = React.useState(false);
-    const [userVote, setUserVote] = React.useState(calculateScore);
     const [applianceModal, setApplianceModal] = React.useState(false);
     const user = JSON.parse(localStorage.getItem('profile'));
     const userId =  user?.result?.googleId || user?.result?._id;
+    const [userVote, setUserVote] = React.useState(calculateScore);
 
     //functions used to open/close modal overlay
     function openModal() {
@@ -44,11 +45,54 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
       setIsOpen(false);
     }
 
-    //aggiornare qui punteggio user
+    const HtmlTooltip = withStyles((theme) => ({
+      tooltip: {
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        maxWidth: 220,
+        border: '1px solid #dadde9',
+      },
+    }))(Tooltip);
+
     function calculateScore(){
+      //niente skill utente, non possibile calcolare punteggio
       if(!profileDetails)
         return -1;
-      else return 77;
+      //niente requisiti, punteggio = 100
+      else if(jobOffer.requirements.length == 0 || jobOffer.requirements == "" || !jobOffer.requirements )
+        return 100;
+      //altrimenti calcola punteggio
+      else {
+         var count = 0; var userScore = 0;
+         jobOffer.requirements.map(elementJobOffer => {
+            var elDescriptionJobOffer = elementJobOffer.split('$',1).join().toLowerCase();
+            var levelJobOffer = elementJobOffer.substr(elementJobOffer.indexOf('$')+1);
+            profileDetails.skills.map(elementSkill => {
+              var elDescriptionSkill = elementSkill.split('$',1).join().toLowerCase();
+              if (elDescriptionJobOffer == elDescriptionSkill) {
+                //trovata descrizione uguale
+                count++;
+                var levelSkill = elementSkill.substr(elementSkill.indexOf('$')+1);
+                //ASCII VALUES: A=65, B=66, C=67
+                var resultASCII = levelJobOffer.charCodeAt() - levelSkill.charCodeAt();
+                if(resultASCII == -2) {
+                  //requested 2 levels more than user has
+                  userScore+=0.33;
+                }
+                else if(resultASCII == -1) {   
+                  //requested 1 level more than user has
+                  userScore+=0.66;
+                }
+                else if(resultASCII >= 0) {
+                  //user has same level or more
+                  userScore+=1;
+                };
+              }
+
+            })
+          })
+          return 100 / count * userScore;
+      }
     }
 
 
@@ -118,8 +162,9 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
               <Modal isOpen={modalIsOpen} onAfterOpen={afterOpenModal} onRequestClose={closeModal} style={customStyles} contentLabel="JobOffer Details" >
                 {!isMobile &&
                   <div className={classes.action}>
-                    <Typography variant="h6" className={`${classes.overlay1} ${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
-
+                    
+                    {userVote != 100 && <Typography variant="h6" className={`${classes.overlay1} ${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>}
+                    
                     <div className={classes.overlay2}>   
                       {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) ? (
                         <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
@@ -156,7 +201,7 @@ const JobOffer = ({ jobOffer, setCurrentId }) => {
 
                   {isMobile &&
                   <div>
-                    <Typography variant="h6" className={`${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>
+                    {userVote != 100 && <Typography variant="h6" className={`${classes.numberCircle} ${userVote < 50 ? `${classes.redColor}` : (userVote < 75) ? `${classes.yellowColor}` : `${classes.greenColor}` }`}> {userVote} </Typography>}
                     <div>
                     {(( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator) && jobOffer.appliances.length > 0) ? (
                         <Button className={classes.deleteButton} size="small" color="primary" onClick={() => setApplianceModal(true)}> Appliances </Button>
