@@ -65,3 +65,10 @@
 .messages-container, .new-message-input-field, .send-message-button {
     border-color: #9a9a9a;
 }
+.paper{
+        marginTop: theme.spacing(2);
+        display: 'flex';
+        flexDirection: 'column';
+        alignItems: 'center';
+        padding: theme.spacing(2);
+}

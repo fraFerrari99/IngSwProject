@@ -40,7 +40,7 @@ const App = () => {
 
     const _Chat=(props)=>{
         return(
-           <ChatRoom jobOfferTitle={jobOfferTitle}{...props}/>
+           <ChatRoom jobOfferTitle={jobOfferTitle}{...props} user={user}/>
         );
     }
 

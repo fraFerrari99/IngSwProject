@@ -1,11 +1,13 @@
   
 import React from "react";
-
+import {Grid, Paper,Typography} from '@material-ui/core';
 import "./ChatRoom.css";
 import useChat from "../useChat";
 import InfoBar from "../InfoBar/InfoBar";
 
-const ChatRoom = ({jobOfferTitle}) => {
+const ChatRoom = ({jobOfferTitle,user}) => {
+
+
   const roomId= jobOfferTitle;
   const { messages, sendMessage } = useChat(roomId);
   const [newMessage, setNewMessage] = React.useState("");
@@ -17,6 +19,17 @@ const ChatRoom = ({jobOfferTitle}) => {
     sendMessage(newMessage);
     setNewMessage("");
   };
+  if (!user?.result?.name) {
+    return (
+        <Grid item xs={12} sm={12}>
+            <Paper className="paper">
+                <Typography component="p" variant="h6" align="center">
+                    Please Sign In to Chat.
+                </Typography>
+            </Paper>
+        </Grid>
+    )
+}
   return (
     <div className="chat-room-container">
       <InfoBar jobOfferTitle={jobOfferTitle} />
