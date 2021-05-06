@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Grow, Button, Typography, Grid, Paper, Container } from '@material-ui/core';
 import ChatIcon from '@material-ui/icons/Chat';
 import { useDispatch } from 'react-redux';
-
+import { Link } from 'react-router-dom';
 import useStyles from './styles';
 
 import Score from '../Score/Score';
 
-const Candidate = ({ index, userId, score }) => {
+const Candidate = ({ index, userId, score, setJobOfferTitle,jobOfferTitle}) => {
     const classes = useStyles();
 
     return (
@@ -20,7 +20,9 @@ const Candidate = ({ index, userId, score }) => {
                     <Score userVote={score} />
                 </Grid>
                 <Grid className={classes.item} item>
-                    <Button size="small" color="primary" onClick={null} > 
+                <Button size="small" color="primary" component={Link} to="/chat" onClick={()=>{
+                         setJobOfferTitle(jobOfferTitle);
+                    }} > 
                         <ChatIcon  fontSize="small"/>&nbsp; Chat with candidate </Button>
                 </Grid>
             </Grid>

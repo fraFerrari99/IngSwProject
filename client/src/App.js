@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container } from '@material-ui/core';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-
+import ChatRoom from './components/Chat/Chat/ChatRoom'
 import Navbar from './components/Navbar/Navbar';
 import Home from './components/Home/Home';
 import PostJobOffer from './components/PostJobOffer/PostJobOffer';
@@ -12,6 +12,7 @@ import Profile from './components/Profile/Profile';
 
 const App = () => {
     const dispatch = useDispatch();
+    const [jobOfferTitle,setJobOfferTitle]=useState(null);
     const [currentId, setCurrentId] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
     const [profileDetails, setProfileDetails] = useState(null);
@@ -27,7 +28,7 @@ const App = () => {
 
     const _Home = (props) => {
         return (
-          <Home currentId={currentId} setCurrentId={setCurrentId} profileDetails={profileDetails} {...props} />
+          <Home currentId={currentId} setCurrentId={setCurrentId} setJobOfferTitle={setJobOfferTitle} jobOfferTitle={jobOfferTitle} profileDetails={profileDetails} {...props} />
         );
     }
 
@@ -36,6 +37,12 @@ const App = () => {
           <Profile user={user} _setProfileDetails={setProfileDetails} {...props} />
         );
     }
+    const _Chat=(props)=>{
+        return(
+           <ChatRoom jobOfferTitle={jobOfferTitle}{...props} user={user}/>
+        );
+    }
+
 
     useEffect(() => {
         const token = user?.token;
@@ -70,6 +77,7 @@ const App = () => {
                 <Route path="/postJobOffer" exact component={_PostJobOffer}/>
                 <Route path="/auth" exact component={Auth}/>
                 <Route path="/profile" exact component={_Profile}/>
+                <Route path="/chat" exact component={_Chat} />
             </Switch>
         </Container>
     </BrowserRouter> 

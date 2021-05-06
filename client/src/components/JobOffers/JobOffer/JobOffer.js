@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
+import ChatIcon from '@material-ui/icons/Chat';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,9 +21,9 @@ import { deleteJobOffer, applyToJobOffer } from '../../../actions/jobOffers';
 
 import useStyles from './styles';
 
-const JobOffer = ({ jobOffer, setCurrentId, profileDetails }) => {
+const JobOffer = ({ jobOffer, setCurrentId, setJobOfferTitle,jobOfferTitle }) => {
     Modal.setAppElement('#root');
-
+    const profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
     const classes = useStyles();
     const dispatch = useDispatch();
     const [modalIsOpen,setIsOpen] = React.useState(false);
@@ -222,7 +223,7 @@ const JobOffer = ({ jobOffer, setCurrentId, profileDetails }) => {
                       { jobOffer.appliances  &&
                         jobOffer.appliances.map((candidate) => (
                           <DialogContentText id="alert-dialog-description">
-                            <Candidate userId={candidate} score={87} />
+                            <Candidate userId={candidate} score={87} setJobOfferTitle={setJobOfferTitle} jobOfferTitle={jobOffer.title} />
                           </DialogContentText>
                         )) 
                       }
@@ -237,6 +238,14 @@ const JobOffer = ({ jobOffer, setCurrentId, profileDetails }) => {
             {( user?.result?.googleId == jobOffer?.creator || user?.result?._id == jobOffer?.creator ) && (
               <Button className={classes.deleteButton} size="small" color="secondary" onClick={() => dispatch(deleteJobOffer(jobOffer._id))}>
                 <DeleteIcon  fontSize="small"/> Delete </Button>
+            )}
+            {(( user?.result?.googleId !== jobOffer?.creator && user?.result?._id !== jobOffer?.creator)) && (
+              <Button size="small" color="primary" component={Link} to="/chat" onClick={()=>
+                {
+                      setJobOfferTitle(jobOffer.title);
+        
+              }}>
+               <ChatIcon fontsize="small" /> Chat</Button>
             )}
           </CardActions>
         </Card>
